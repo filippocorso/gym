@@ -1,6 +1,6 @@
 let schede = JSON.parse(localStorage.getItem("schede")) || [];
 let editing = {tipo:null, scheda:null, allenamento:null, esercizio:null, serie:null};
-let modalità = "creazione"; // "creazione" o "allenamento"
+let modalità = "creazione"; 
 
 const main = document.getElementById("main");
 const popup = document.getElementById("popup");
@@ -55,7 +55,7 @@ popupSave.onclick=()=>{
     case "esercizio":
       const eIndex=editing.index, si1=editing.scheda, ai=editing.allenamento;
       if(eIndex!==null) schede[si1].allenamenti[ai].esercizi[eIndex].nome=nome;
-      else schede[si1].allenamenti[ai].esercizi.push({nome,serie:[]});
+      else schede[si1].allenamenti[ai].esercizi.push({nome,serie:[],recupero:30});
       mostraEsercizi(si1,ai);
       break;
   }
@@ -74,7 +74,7 @@ function mostraAllenamenti(si){
   main.innerHTML=`<h2>${s.nome}</h2>
   <ul id="allenamentiList" class="list"></ul>
   ${modalità==="creazione"?'<button class="btn" onclick="aggiungiAllenamento('+si+')">+ Aggiungi Allenamento</button>':""}
-  <button class="btn" onclick="render()">⬅ Torna</button>`;
+  <button class="btn" onclick="render()">💾 Salva</button>`;
   const list=document.getElementById("allenamentiList");
   s.allenamenti.forEach((a,ai)=>{
     const li=document.createElement("li");
@@ -96,11 +96,12 @@ function mostraEsercizi(si,ai){
   main.innerHTML=`<h2>${a.nome}</h2>
     <ul id="eserciziList" class="list"></ul>
     ${modalità==="creazione"?'<button class="btn" onclick="aggiungiEsercizio('+si+','+ai+')">+ Aggiungi Esercizio</button>':""}
-    <button class="btn" onclick="mostraAllenamenti(${si})">⬅ Torna</button>`;
+    <button class="btn" onclick="salva()">💾 Salva</button>`;
   const list=document.getElementById("eserciziList");
   a.esercizi.forEach((e,ei)=>{
     const li=document.createElement("li");
-    li.innerHTML=`<span>${e.nome}</span>
+    li.innerHTML=`<div class="nomeEsercizio">${e.nome}</div>
+      <div class="recuperoEsercizio">Recupero: ${e.recupero}s</div>
       ${modalità==="creazione"?`<div>
         <button onclick="editEsercizio(${si},${ai},${ei})" class="btn">✏️</button>
         <button onclick="deleteEsercizio(${si},${ai},${ei})" class="btn">🗑️</button>
@@ -108,25 +109,22 @@ function mostraEsercizi(si,ai){
     list.appendChild(li);
 
     // Serie
-    const serieList=document.createElement("ul");
     e.serie.forEach((s,si2)=>{
-      const liS=document.createElement("li");
+      const liS=document.createElement("div");
       liS.className="serie "+(s.completata?"completed":"pending");
-      liS.innerHTML=`<input type="number" value="${s.peso}" onchange="modificaSerie(${si},${ai},${ei},${si2},'peso',this.value)" ${modalità==="allenamento"?"disabled":""}>kg
-        <input type="number" value="${s.reps}" onchange="modificaSerie(${si},${ai},${ei},${si2},'reps',this.value)" ${modalità==="allenamento"?"disabled":""}>reps
-        <input type="number" value="${s.recupero}" onchange="modificaSerie(${si},${ai},${ei},${si2},'recupero',this.value)" ${modalità==="allenamento"?"disabled":""}>s
-        <input type="checkbox" ${s.completata?"checked":""} onclick="toggleSerie(${si},${ai},${ei},${si2},this)" ${modalità==="creazione"?"disabled":""}>`;
-      serieList.appendChild(liS);
+      liS.innerHTML=`<input type="checkbox" ${s.completata?"checked":""} onclick="toggleSerie(${si},${ai},${ei},${si2},this)">
+        <input type="number" value="${s.peso}" onchange="modificaSerie(${si},${ai},${ei},${si2},'peso',this.value)" ${modalità==="allenamento"?"disabled":""}>kg
+        <input type="number" value="${s.reps}" onchange="modificaSerie(${si},${ai},${ei},${si2},'reps',this.value)" ${modalità==="allenamento"?"disabled":""}>reps`;
+      li.appendChild(liS);
     });
-    li.appendChild(serieList);
 
-    // Bottone aggiungi serie
+    // Bottone aggiungi serie sotto le serie
     if(modalità==="creazione"){
       const addSerieBtn=document.createElement("button");
       addSerieBtn.textContent="+ Aggiungi Serie";
       addSerieBtn.className="btn";
       addSerieBtn.onclick=()=>{
-        e.serie.push({peso:0,reps:0,recupero:30,completata:false});
+        e.serie.push({peso:0,reps:0,completata:false});
         salva();
         mostraEsercizi(si,ai);
       };
@@ -135,15 +133,12 @@ function mostraEsercizi(si,ai){
   });
 }
 
-function aggiungiEsercizio(si,ai){ editing={tipo:"esercizio",scheda:si,allenamento:ai,index:null}; popupInput.value=""; popup.classList.remove("hidden"); }
-function editEsercizio(si,ai,ei){ editing={tipo:"esercizio",scheda:si,allenamento:ai,index:ei}; popupInput.value=schede[si].allenamenti[ai].esercizi[ei].nome; popup.classList.remove("hidden"); }
-function deleteEsercizio(si,ai,ei){ schede[si].allenamenti[ai].esercizi.splice(ei,1); salva(); mostraEsercizi(si,ai); }
-
-// MODIFICA SERIE INLINE
-function modificaSerie(si,ai,ei,si2,param,val){
-  schede[si].allenamenti[ai].esercizi[ei].serie[si2][param]=Number(val);
-  salva();
-}
+// MODALITÀ
+toggleModeBtn.onclick=()=>{
+  modalità=modalità==="creazione"?"allenamento":"creazione";
+  toggleModeBtn.textContent=modalità==="creazione"?"Modalità Allenamento":"Modalità Creazione";
+  render();
+};
 
 // SERIE ALLENAMENTO
 function toggleSerie(si,ai,ei,si2,checkbox){
@@ -154,7 +149,7 @@ function toggleSerie(si,ai,ei,si2,checkbox){
   mostraEsercizi(si,ai);
 
   if(s.completata){
-    let seconds = s.recupero;
+    let seconds = schede[si].allenamenti[ai].esercizi[ei].recupero;
     const countdown = document.createElement("span");
     countdown.className="countdown";
     checkbox.parentElement.appendChild(countdown);
@@ -172,12 +167,11 @@ function toggleSerie(si,ai,ei,si2,checkbox){
   }
 }
 
-// MODALITÀ
-toggleModeBtn.onclick=()=>{
-  modalità=modalità==="creazione"?"allenamento":"creazione";
-  toggleModeBtn.textContent=modalità==="creazione"?"Modalità Allenamento":"Modalità Creazione";
-  render();
-};
+// MODIFICA SERIE INLINE
+function modificaSerie(si,ai,ei,si2,param,val){
+  schede[si].allenamenti[ai].esercizi[ei].serie[si2][param]=Number(val);
+  salva();
+}
 
 // INIT
 render();
