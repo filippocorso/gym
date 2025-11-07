@@ -58,6 +58,7 @@ header {
   justify-content: space-between;
   align-items: center;
   transition: background 0.3s;
+  cursor: grab;
 }
 
 .serie.completed {
