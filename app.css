@@ -1,55 +1,28 @@
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background: #111;
-  color: #fff;
-  text-align: center;
-}
-
-header {
-  background: #222;
-  padding: 15px;
-}
-
-.btn {
-  background: #0a84ff;
-  border: none;
-  padding: 12px;
-  margin: 5px;
-  border-radius: 12px;
-  font-size: 16px;
-  color: #fff;
-  cursor: pointer;
-}
-
-ul {
-  list-style: none;
-  padding: 0;
-}
-
-.scheda, .allenamento, .esercizio, .serie {
-  background: #222;
-  padding: 12px;
-  margin: 10px;
-  border-radius: 12px;
-  display: flex;
+.serie {
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
-}
-
-.serie {
-  flex-direction: column;
-  align-items: flex-start;
-  margin-left: 20px;
-}
-
-.hidden {
-  display: none;
-}
-
-input {
-  width: 200px;
   padding: 10px;
-  margin-bottom: 10px;
+  margin-left: 20px;
+  border-radius: 12px;
+  background: #222;
+  transition: background 0.3s;
+}
+
+.serie.completed {
+  background: #0a4; /* verde per completata */
+}
+
+.serie.pending {
+  background: #a00; /* rosso per non completata */
+}
+
+.serie span {
+  margin-right: 10px;
+}
+
+.countdown {
+  font-weight: bold;
+  color: #ff0;
+  margin-left: 10px;
 }
