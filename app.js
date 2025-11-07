@@ -9,18 +9,18 @@ const popupSave = document.getElementById("popupSave");
 const popupCancel = document.getElementById("popupCancel");
 
 // SALVATAGGIO
-function salva() { localStorage.setItem("schede", JSON.stringify(schede)); }
+function salva(){ localStorage.setItem("schede", JSON.stringify(schede)); }
 
 // HOME SCHEDE
 function render(){
-  main.innerHTML = `<ul id="schedeList" class="list"></ul>
+  main.innerHTML=`<ul id="schedeList" class="list"></ul>
     <button id="addSchedaBtn" class="btn">+ Aggiungi Scheda</button>`;
   const schedeList = document.getElementById("schedeList");
   const addSchedaBtn = document.getElementById("addSchedaBtn");
 
-  schede.forEach((s, si)=>{
-    const li = document.createElement("li");
-    li.innerHTML = `<span>${s.nome}</span>
+  schede.forEach((s,si)=>{
+    const li=document.createElement("li");
+    li.innerHTML=`<span>${s.nome}</span>
       <div>
         <button onclick="editScheda(${si})" class="btn">✏️</button>
         <button onclick="deleteScheda(${si})" class="btn">🗑️</button>
@@ -29,7 +29,7 @@ function render(){
     schedeList.appendChild(li);
   });
 
-  addSchedaBtn.onclick = ()=>{
+  addSchedaBtn.onclick=()=>{
     editing={tipo:"scheda",index:null};
     popupInput.value="";
     popup.classList.remove("hidden");
@@ -37,27 +37,27 @@ function render(){
 }
 
 // POPUP
-popupCancel.onclick = ()=>popup.classList.add("hidden");
-popupSave.onclick = ()=>{
-  const nome = popupInput.value.trim();
+popupCancel.onclick=()=>popup.classList.add("hidden");
+popupSave.onclick=()=>{
+  const nome=popupInput.value.trim();
   if(!nome) return;
 
   switch(editing.tipo){
     case "scheda":
       if(editing.index!==null) schede[editing.index].nome=nome;
-      else schede.push({nome, allenamenti:[]});
+      else schede.push({nome,allenamenti:[]});
       break;
     case "allenamento":
       const aIndex=editing.index, sIndex=editing.scheda;
       if(aIndex!==null) schede[sIndex].allenamenti[aIndex].nome=nome;
-      else schede[sIndex].allenamenti.push({nome, esercizi:[]});
+      else schede[sIndex].allenamenti.push({nome,esercizi:[]});
       mostraAllenamenti(sIndex);
       break;
     case "esercizio":
-      const eIndex=editing.index, si=editing.scheda, ai=editing.allenamento;
-      if(eIndex!==null) schede[si].allenamenti[ai].esercizi[eIndex].nome=nome;
-      else schede[si].allenamenti[ai].esercizi.push({nome, serie:[]});
-      mostraEsercizi(si,ai);
+      const eIndex=editing.index, si1=editing.scheda, ai=editing.allenamento;
+      if(eIndex!==null) schede[si1].allenamenti[ai].esercizi[eIndex].nome=nome;
+      else schede[si1].allenamenti[ai].esercizi.push({nome,serie:[]});
+      mostraEsercizi(si1,ai);
       break;
   }
 
@@ -108,15 +108,30 @@ function mostraEsercizi(si,ai){
         <button onclick="editEsercizio(${si},${ai},${ei})" class="btn">✏️</button>
         <button onclick="deleteEsercizio(${si},${ai},${ei})" class="btn">🗑️</button>
       </div>
-      <ul id="serieList${ei}"></ul>
+      <ul id="serieList${ei}" class="list"></ul>
       <button class="btn" onclick="aggiungiSerie(${si},${ai},${ei})">+ Serie</button>`;
     list.appendChild(li);
+
     const serieList=document.getElementById(`serieList${ei}`);
     e.serie.forEach((s,si2)=>{
       const li2=document.createElement("li");
       li2.className="serie "+(s.completata?"completed":"pending");
+      li2.draggable=true;
       li2.innerHTML=`Serie ${si2+1}: ${s.peso}kg | Reps: ${s.reps} | Recupero: ${s.recupero}s
         <input type="checkbox" ${s.completata?"checked":""} onclick="toggleSerie(${si},${ai},${ei},${si2},this)">`;
+      li2.addEventListener("dragstart",(ev)=>{ev.dataTransfer.setData("text/plain",si2); ev.dataTransfer.effectAllowed="move";});
+      li2.addEventListener("drop",(ev)=>{
+        ev.preventDefault();
+        const from=ev.dataTransfer.getData("text/plain");
+        const to=si2;
+        if(from==to) return;
+        const arr=e.serie;
+        const temp=arr[from];
+        arr.splice(from,1);
+        arr.splice(to,0,temp);
+        salva(); mostraEsercizi(si,ai);
+      });
+      li2.addEventListener("dragover",(ev)=>ev.preventDefault());
       serieList.appendChild(li2);
     });
   });
