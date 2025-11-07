@@ -1,28 +1,98 @@
-.serie {
-  flex-direction: row;
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #0d0d0d;
+  color: #fff;
+  text-align: center;
+}
+
+header {
+  background: #111;
+  padding: 20px;
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.btn {
+  background: linear-gradient(135deg, #0a84ff, #0066cc);
+  border: none;
+  padding: 15px 25px;
+  margin: 10px;
+  border-radius: 20px;
+  font-size: 18px;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px #0a84ff;
+}
+
+.list li {
+  list-style: none;
+  margin: 10px;
+  background: #222;
+  border-radius: 15px;
+  padding: 15px;
+  display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px;
-  margin-left: 20px;
-  border-radius: 12px;
+  font-size: 18px;
+  transition: background 0.2s;
+}
+
+.list li:hover {
+  background: #333;
+}
+
+.serie {
   background: #222;
+  border-radius: 15px;
+  padding: 10px;
+  margin: 5px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   transition: background 0.3s;
 }
 
 .serie.completed {
-  background: #0a4; /* verde per completata */
+  background: #0a4; /* verde */
 }
 
 .serie.pending {
-  background: #a00; /* rosso per non completata */
-}
-
-.serie span {
-  margin-right: 10px;
+  background: #a00; /* rosso */
 }
 
 .countdown {
   font-weight: bold;
   color: #ff0;
   margin-left: 10px;
+}
+
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #111;
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 0 20px #0a84ff;
+  z-index: 10;
+}
+
+.hidden { display: none; }
+
+input {
+  width: 220px;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 12px;
+  border: none;
+  font-size: 16px;
 }
