@@ -148,28 +148,27 @@ function modificaSerie(si,ai,ei,si2,param,val){
 // SERIE ALLENAMENTO
 function toggleSerie(si,ai,ei,si2,checkbox){
   if(modalità==="creazione") return;
-  let s=schede[si].allenamenti[ai].esercizi[ei].serie[si2];
-  s.completata=checkbox.checked;
-  salva(); mostraEsercizi(si,ai);
+  let s = schede[si].allenamenti[ai].esercizi[ei].serie[si2];
+  s.completata = checkbox.checked;
+  salva();
+  mostraEsercizi(si,ai);
+
   if(s.completata){
-    let seconds=s.recupero;
-    const countdown=document.createElement("span");
+    let seconds = s.recupero;
+    const countdown = document.createElement("span");
     countdown.className="countdown";
     checkbox.parentElement.appendChild(countdown);
-    const interval=setInterval(()=>{
-      countdown.textContent=seconds;
+
+    const interval = setInterval(()=>{
+      countdown.textContent = seconds + "s";
       seconds--;
-      if(seconds<0){ clearInterval(interval); countdown.remove(); const audio=new Audio('assets/beep.mp3'); audio.play(); alert("Recupero terminato!"); }
-    },1000);
+      if(seconds < 0){
+        clearInterval(interval);
+        countdown.remove();
+        // beep automatico
+        const audio = new Audio('assets/beep.mp3');
+        audio.play();
+      }
+    }, 1000);
   }
 }
-
-// MODALITÀ
-toggleModeBtn.onclick=()=>{
-  modalità=modalità==="creazione"?"allenamento":"creazione";
-  toggleModeBtn.textContent=modalità==="creazione"?"Modalità Allenamento":"Modalità Creazione";
-  render();
-};
-
-// INIT
-render();
