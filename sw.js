@@ -1,3 +1,3 @@
-// Service Worker vuoto per PWA offline
-self.addEventListener('install', e => self.skipWaiting());
-self.addEventListener('activate', e => self.clients.claim());
+self.addEventListener('install',event=>{console.log('SW install');});
+self.addEventListener('activate',event=>{console.log('SW activate');});
+self.addEventListener('fetch',event=>{});
