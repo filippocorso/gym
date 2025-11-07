@@ -13,15 +13,18 @@ header {
   font-size: 24px;
   font-weight: bold;
   letter-spacing: 1px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .btn {
   background: linear-gradient(135deg, #0a84ff, #0066cc);
   border: none;
-  padding: 15px 25px;
-  margin: 10px;
+  padding: 12px 20px;
+  margin: 5px;
   border-radius: 20px;
-  font-size: 18px;
+  font-size: 16px;
   color: #fff;
   cursor: pointer;
   transition: transform 0.2s, box-shadow 0.2s;
@@ -29,7 +32,7 @@ header {
 
 .btn:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 15px #0a84ff;
+  box-shadow: 0 0 10px #0a84ff;
 }
 
 .list li {
@@ -51,22 +54,24 @@ header {
 
 .serie {
   background: #222;
-  border-radius: 15px;
+  border-radius: 12px;
   padding: 10px;
   margin: 5px 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  transition: background 0.3s;
-  cursor: grab;
 }
 
-.serie.completed {
-  background: #0a4; /* verde */
-}
+.serie.completed { background: #0a4; }
+.serie.pending { background: #a00; }
 
-.serie.pending {
-  background: #a00; /* rosso */
+.serie input[type="number"] {
+  width: 60px;
+  margin: 0 5px;
+  border-radius: 8px;
+  border: none;
+  padding: 5px;
+  font-size: 16px;
 }
 
 .countdown {
