@@ -177,11 +177,25 @@ function toggleSerie(si, ai, ei, seIdx, checkbox){
   let s = schede[si].allenamenti[ai].esercizi[ei].serie[seIdx];
   s.completata = checkbox.checked;
   salva();
+  mostraEsercizi(si, ai); // aggiorna classe colori
+
   if(s.completata){
-    const audio = new Audio('assets/beep.mp3');
-    setTimeout(()=>{ audio.play(); alert("Recupero terminato, inizia la prossima serie!") }, s.recupero*1000);
+    let seconds = s.recupero;
+    const liSerie = document.querySelectorAll(".serie")[seIdx]; // li della serie
+    const countdownSpan = document.createElement("span");
+    countdownSpan.className = "countdown";
+    liSerie.appendChild(countdownSpan);
+
+    const interval = setInterval(()=>{
+      countdownSpan.textContent = seconds;
+      seconds--;
+      if(seconds<0){
+        clearInterval(interval);
+        countdownSpan.remove();
+        const audio = new Audio('assets/beep.mp3');
+        audio.play();
+        alert("Recupero terminato, inizia la prossima serie!");
+      }
+    }, 1000);
   }
 }
-
-// ✅ INIT
-render();
