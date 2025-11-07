@@ -1,27 +1,31 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gym App</title>
-  <link rel="stylesheet" href="app.css">
-  <link rel="manifest" href="manifest.json">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gym App</title>
+<link rel="stylesheet" href="app.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+<header>
+  <h1>Gym App</h1>
+  <button id="toggleMode" class="btn">Modalità Allenamento</button>
+</header>
 
-  <header>
-    <h1>Gym App</h1>
-    <button id="toggleMode" class="btn">Modalità Allenamento</button>
-  </header>
+<main id="main"></main>
 
-  <main id="main"></main>
+<!-- Popup per aggiungere/rinominare scheda, allenamento, esercizio -->
+<div id="popup" class="popup hidden">
+  <input type="text" id="popupInput" placeholder="Nome">
+  <button id="popupSave" class="btn">Salva</button>
+  <button id="popupCancel" class="btn">Annulla</button>
+</div>
 
-  <div id="popup" class="popup hidden">
-    <input type="text" id="popupInput" placeholder="Nome">
-    <button id="popupSave" class="btn">Salva</button>
-    <button id="popupCancel" class="btn">Annulla</button>
-  </div>
+<!-- Cronometro -->
+<div id="timer" style="font-size:1.2em;margin:10px"></div>
 
-  <script src="app.js"></script>
+<script src="app.js"></script>
+<script src="historico.js"></script>
 </body>
 </html>
