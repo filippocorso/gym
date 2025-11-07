@@ -1,6 +1,6 @@
 let schede = JSON.parse(localStorage.getItem("schede")) || [];
 let editing = {tipo:null, scheda:null, allenamento:null, esercizio:null, serie:null};
-let modalità = "creazione"; 
+let modalità = "creazione"; // "creazione" o "allenamento"
 
 const main = document.getElementById("main");
 const popup = document.getElementById("popup");
@@ -11,6 +11,7 @@ const toggleModeBtn = document.getElementById("toggleMode");
 
 function salva(){ localStorage.setItem("schede", JSON.stringify(schede)); }
 
+// ------------------- RENDER SCHEDE -------------------
 function render(){
   main.innerHTML=`<ul id="schedeList" class="list"></ul>
   ${modalità==="creazione"?'<button id="addSchedaBtn" class="btn">+ Aggiungi Scheda</button>':""}`;
@@ -36,7 +37,7 @@ function render(){
   }
 }
 
-// POPUP
+// ------------------- POPUP -------------------
 popupCancel.onclick=()=>popup.classList.add("hidden");
 popupSave.onclick=()=>{
   const nome=popupInput.value.trim();
@@ -50,31 +51,28 @@ popupSave.onclick=()=>{
       const aIndex=editing.index, sIndex=editing.scheda;
       if(aIndex!==null) schede[sIndex].allenamenti[aIndex].nome=nome;
       else schede[sIndex].allenamenti.push({nome,esercizi:[]});
-      mostraAllenamenti(sIndex);
       break;
     case "esercizio":
       const eIndex=editing.index, si1=editing.scheda, ai=editing.allenamento;
       if(eIndex!==null) schede[si1].allenamenti[ai].esercizi[eIndex].nome=nome;
       else schede[si1].allenamenti[ai].esercizi.push({nome,serie:[],recupero:30});
-      mostraEsercizi(si1,ai);
       break;
   }
   salva();
   popup.classList.add("hidden");
-  if(editing.tipo==="scheda") render();
+  render();
 };
 
-// SCHEDE
+// ------------------- SCHEDE -------------------
 function editScheda(i){ editing={tipo:"scheda",index:i}; popupInput.value=schede[i].nome; popup.classList.remove("hidden"); }
 function deleteScheda(i){ schede.splice(i,1); salva(); render(); }
 
-// ALLENAMENTI
+// ------------------- ALLENAMENTI -------------------
 function mostraAllenamenti(si){
   const s=schede[si];
   main.innerHTML=`<h2>${s.nome}</h2>
   <ul id="allenamentiList" class="list"></ul>
-  ${modalità==="creazione"?'<button class="btn" onclick="aggiungiAllenamento('+si+')">+ Aggiungi Allenamento</button>':""}
-  <button class="btn" onclick="render()">💾 Salva</button>`;
+  ${modalità==="creazione"?'<button class="btn" onclick="aggiungiAllenamento('+si+')">+ Aggiungi Allenamento</button>':""}`;
   const list=document.getElementById("allenamentiList");
   s.allenamenti.forEach((a,ai)=>{
     const li=document.createElement("li");
@@ -86,22 +84,39 @@ function mostraAllenamenti(si){
     list.appendChild(li);
   });
 }
-function aggiungiAllenamento(si){ editing={tipo:"allenamento",scheda:si,index:null}; popupInput.value=""; popup.classList.remove("hidden"); }
-function editAllenamento(si,ai){ editing={tipo:"allenamento",scheda:si,index:ai}; popupInput.value=schede[si].allenamenti[ai].nome; popup.classList.remove("hidden"); }
-function deleteAllenamento(si,ai){ schede[si].allenamenti.splice(ai,1); salva(); mostraAllenamenti(si); }
 
-// ESERCIZI
+function aggiungiAllenamento(si){ 
+  editing={tipo:"allenamento",scheda:si,index:null}; 
+  popupInput.value=""; 
+  popup.classList.remove("hidden"); 
+}
+
+function editAllenamento(si,ai){ 
+  editing={tipo:"allenamento",scheda:si,index:ai}; 
+  popupInput.value=schede[si].allenamenti[ai].nome; 
+  popup.classList.remove("hidden"); 
+}
+
+function deleteAllenamento(si,ai){ 
+  schede[si].allenamenti.splice(ai,1); 
+  salva(); 
+  mostraAllenamenti(si); 
+}
+
+// ------------------- ESERCIZI -------------------
 function mostraEsercizi(si,ai){
   const a=schede[si].allenamenti[ai];
   main.innerHTML=`<h2>${a.nome}</h2>
     <ul id="eserciziList" class="list"></ul>
     ${modalità==="creazione"?'<button class="btn" onclick="aggiungiEsercizio('+si+','+ai+')">+ Aggiungi Esercizio</button>':""}
-    <button class="btn" onclick="salva()">💾 Salva</button>`;
+    ${modalità==="creazione"?'<button class="btn" onclick="salvaAllenamento('+si+','+ai+')">💾 Salva</button>':""}
+    <button class="btn" onclick="mostraAllenamenti('+si+')">⬅ Torna</button>`;
+
   const list=document.getElementById("eserciziList");
   a.esercizi.forEach((e,ei)=>{
     const li=document.createElement("li");
     li.innerHTML=`<div class="nomeEsercizio">${e.nome}</div>
-      <div class="recuperoEsercizio">Recupero: ${e.recupero}s</div>
+      <div>Recupero: <input type="number" value="${e.recupero}" onchange="modificaRecupero(${si},${ai},${ei},this.value)"/> s</div>
       ${modalità==="creazione"?`<div>
         <button onclick="editEsercizio(${si},${ai},${ei})" class="btn">✏️</button>
         <button onclick="deleteEsercizio(${si},${ai},${ei})" class="btn">🗑️</button>
@@ -118,7 +133,7 @@ function mostraEsercizi(si,ai){
       li.appendChild(liS);
     });
 
-    // Bottone aggiungi serie sotto le serie
+    // Bottone aggiungi serie
     if(modalità==="creazione"){
       const addSerieBtn=document.createElement("button");
       addSerieBtn.textContent="+ Aggiungi Serie";
@@ -133,14 +148,37 @@ function mostraEsercizi(si,ai){
   });
 }
 
-// MODALITÀ
-toggleModeBtn.onclick=()=>{
-  modalità=modalità==="creazione"?"allenamento":"creazione";
-  toggleModeBtn.textContent=modalità==="creazione"?"Modalità Allenamento":"Modalità Creazione";
-  render();
-};
+// ------------------- Aggiungi/Modifica esercizio -------------------
+function aggiungiEsercizio(si,ai){ 
+  editing={tipo:"esercizio",scheda:si,allenamento:ai,index:null}; 
+  popupInput.value=""; 
+  popup.classList.remove("hidden"); 
+}
 
-// SERIE ALLENAMENTO
+function editEsercizio(si,ai,ei){ 
+  editing={tipo:"esercizio",scheda:si,allenamento:ai,index:ei}; 
+  popupInput.value=schede[si].allenamenti[ai].esercizi[ei].nome; 
+  popup.classList.remove("hidden"); 
+}
+
+function deleteEsercizio(si,ai,ei){ 
+  schede[si].allenamenti[ai].esercizi.splice(ei,1); 
+  salva(); 
+  mostraEsercizi(si,ai); 
+}
+
+// ------------------- MODIFICA SERIE / RECUPERO -------------------
+function modificaSerie(si,ai,ei,si2,param,val){
+  schede[si].allenamenti[ai].esercizi[ei].serie[si2][param]=Number(val);
+  salva();
+}
+
+function modificaRecupero(si,ai,ei,val){
+  schede[si].allenamenti[ai].esercizi[ei].recupero=Number(val);
+  salva();
+}
+
+// ------------------- SERIE ALLENAMENTO -------------------
 function toggleSerie(si,ai,ei,si2,checkbox){
   if(modalità==="creazione") return;
   let s = schede[si].allenamenti[ai].esercizi[ei].serie[si2];
@@ -167,11 +205,18 @@ function toggleSerie(si,ai,ei,si2,checkbox){
   }
 }
 
-// MODIFICA SERIE INLINE
-function modificaSerie(si,ai,ei,si2,param,val){
-  schede[si].allenamenti[ai].esercizi[ei].serie[si2][param]=Number(val);
+// ------------------- SALVA ALLENAMENTO -------------------
+function salvaAllenamento(si,ai){
   salva();
+  mostraAllenamenti(si);
 }
 
-// INIT
+// ------------------- MODALITÀ -------------------
+toggleModeBtn.onclick=()=>{
+  modalità=modalità==="creazione"?"allenamento":"creazione";
+  toggleModeBtn.textContent=modalità==="creazione"?"Modalità Allenamento":"Modalità Creazione";
+  render();
+};
+
+// ------------------- INIT -------------------
 render();
