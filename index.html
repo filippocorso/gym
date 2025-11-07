@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gym App</title>
+  <link rel="stylesheet" href="app.css">
+
+  <!-- Manifest -->
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+
+  <header>
+    <h1>Gym App</h1>
+  </header>
+
+  <main>
+    <ul id="schedeList"></ul>
+    <button id="addSchedaBtn" class="btn">+ Aggiungi Scheda</button>
+  </main>
+
+  <!-- Popup per aggiungere/rinominare scheda -->
+  <div id="popup" class="popup hidden">
+    <input type="text" id="popupInput" placeholder="Nome scheda">
+    <button id="popupSave" class="btn">Salva</button>
+    <button id="popupCancel" class="btn">Annulla</button>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
