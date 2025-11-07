@@ -27,7 +27,7 @@ function render(){
     schedeList.appendChild(li);
   });
 
-  if(modalità==="creazione"){
+  if(modalità==="creazione" && addSchedaBtn){
     addSchedaBtn.onclick=()=>{
       editing={tipo:"scheda",index:null};
       popupInput.value="";
@@ -107,6 +107,7 @@ function mostraEsercizi(si,ai){
       </div>`:""}`;
     list.appendChild(li);
 
+    // Serie
     const serieList=document.createElement("ul");
     e.serie.forEach((s,si2)=>{
       const liS=document.createElement("li");
@@ -118,6 +119,19 @@ function mostraEsercizi(si,ai){
       serieList.appendChild(liS);
     });
     li.appendChild(serieList);
+
+    // Bottone aggiungi serie
+    if(modalità==="creazione"){
+      const addSerieBtn=document.createElement("button");
+      addSerieBtn.textContent="+ Aggiungi Serie";
+      addSerieBtn.className="btn";
+      addSerieBtn.onclick=()=>{
+        e.serie.push({peso:0,reps:0,recupero:30,completata:false});
+        salva();
+        mostraEsercizi(si,ai);
+      };
+      li.appendChild(addSerieBtn);
+    }
   });
 }
 
