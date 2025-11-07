@@ -165,10 +165,19 @@ function toggleSerie(si,ai,ei,si2,checkbox){
       if(seconds < 0){
         clearInterval(interval);
         countdown.remove();
-        // beep automatico
         const audio = new Audio('assets/beep.mp3');
         audio.play();
       }
     }, 1000);
   }
 }
+
+// MODALITÀ
+toggleModeBtn.onclick=()=>{
+  modalità=modalità==="creazione"?"allenamento":"creazione";
+  toggleModeBtn.textContent=modalità==="creazione"?"Modalità Allenamento":"Modalità Creazione";
+  render();
+};
+
+// INIT
+render();
