@@ -1,20 +1,25 @@
 :root{
-  --bg:#0d0d0d;
-  --card:#1e1e1e;
-  --muted:#999;
-  --accent:#0a84ff;
+  --bg:#070607;
+  --card:#0f0f10;
+  --muted:#9a9a9a;
+  --accent:#b00020; /* dark red */
+  --accent-2:#ff304f;
+  --btn-shadow: 0 8px 28px rgba(176,0,32,0.12);
+  --radius:14px;
+  --surface: #111;
 }
 
+/* base font - iOS clean combo */
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
   margin:0;
   padding:0;
-  font-family:Arial,Helvetica,sans-serif;
   background:var(--bg);
   color:#fff;
+  font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   -webkit-font-smoothing:antialiased;
-  -webkit-touch-callout:none;
+  -webkit-text-size-adjust:100%;
   -webkit-user-select:none;
 }
 
@@ -23,110 +28,95 @@ header{
   justify-content:space-between;
   align-items:center;
   padding:14px;
-  background:#111;
+  background:linear-gradient(180deg,#0b0b0b, #0d0d0d);
   border-bottom:1px solid rgba(255,255,255,0.03);
 }
-header h1{margin:0;font-size:18px;letter-spacing:0.6px}
+header h1{
+  margin:0;
+  font-size:17px;
+  letter-spacing:1px;
+  font-weight:700;
+  color:#fff;
+}
+
 .header-controls{display:flex;gap:8px}
 
-main{padding:12px; padding-bottom:80px; transition:opacity .18s ease;}
-
-.btn{
-  background:linear-gradient(135deg,var(--accent),#0066cc);
-  border:none;
-  padding:10px 12px;
-  border-radius:12px;
-  color:#fff;
-  font-size:15px;
-  cursor:pointer;
-  box-shadow:0 6px 18px rgba(10,132,255,0.08);
-  transition:transform .12s ease, box-shadow .12s ease;
+/* main */
+main{
+  padding:14px;
+  padding-bottom:100px;
+  transition:opacity .18s ease, transform .12s ease;
 }
-.btn:active{transform:scale(.98)}
-.btn.alt{background:#444}
+
+/* buttons */
+.btn{
+  background: linear-gradient(135deg,var(--accent), var(--accent-2));
+  border: none;
+  color: #fff;
+  padding:10px 12px;
+  border-radius: 12px;
+  font-weight:700;
+  font-size:14px;
+  cursor:pointer;
+  box-shadow: var(--btn-shadow);
+}
+.btn.alt{ background:#2a2a2a; box-shadow:none; color:#fff; border:1px solid rgba(255,255,255,0.03) }
 
 ul.list{list-style:none;padding:0;margin:0}
+
+/* card */
 li.card{
-  background:var(--card);
-  border-radius:12px;
-  margin:8px 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+  border-radius: var(--radius);
   padding:12px;
+  margin:10px 0;
   position:relative;
   overflow:visible;
-  transition:transform .18s ease, box-shadow .18s ease;
-  box-shadow:0 6px 18px rgba(0,0,0,0.35);
+  border:1px solid rgba(255,255,255,0.03);
 }
-li.card:active{transform:translateY(1px)}
 
-.nomeEsercizio{font-weight:700;font-size:15px;margin-bottom:8px;text-align:left}
-.recuperoEsercizio{color:var(--muted);font-size:13px;margin-bottom:8px;text-align:left}
+/* title and recovery */
+.nomeEsercizio input{ width:100%; font-weight:700; font-size:15px; border:none; background:transparent; color:#fff }
+.recuperoEsercizio{ color:var(--muted); margin-top:6px; font-size:13px; }
 
-/* serie layout: checkbox all'inizio, peso/reps sotto */
-.serie{
-  display:flex;
-  gap:10px;
-  align-items:flex-start;
-  flex-direction:column;
-  padding:6px 0;
-  border-top:1px dashed rgba(255,255,255,0.02);
-}
-.serie-row{display:flex;align-items:center;gap:10px}
-.serie-row input[type="number"]{width:80px;padding:6px;border-radius:8px;border:none;background:#0f0f0f;color:#fff}
-.serie-row .chk{width:22px;height:22px}
+/* serie layout (vertical) */
+.serie{ display:flex; flex-direction:column; gap:6px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.02) }
+.serie-row{ display:flex; gap:10px; align-items:center }
+.serie-row input[type="number"]{ width:78px; padding:8px; border-radius:10px; border:none; background:#0b0b0b; color:#fff; text-align:center; font-weight:700 }
+.serie-row .chk{ width:22px; height:22px }
 
-.controls-row{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+/* controls row */
+.controls-row{ display:flex; gap:8px; margin-top:8px; flex-wrap:wrap }
 
-/* swipe delete */
-.swipe-wrap{
-  position:relative;
-  overflow:hidden;
-}
-.swipe-content{
-  transform:translateX(0);
-  transition:transform .18s ease;
-}
+/* swipe */
+.swipe-wrap{ position:relative; overflow:hidden; border-radius:12px; }
+.swipe-content{ transform:translateX(0); transition:transform .16s cubic-bezier(.22,.9,.34,1); }
 .delete-surface{
-  position:absolute;
-  right:8px;
-  top:8px;
-  bottom:8px;
-  width:84px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  pointer-events:none;
-  opacity:0;
-  transition:opacity .18s ease;
+  position:absolute; right:10px; top:10px; bottom:10px;
+  width:92px; display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(180deg,#330003, #4b0006);
+  border-radius:10px; pointer-events:none; opacity:0; transition:opacity .12s ease;
 }
-.show-delete .delete-surface{pointer-events:auto;opacity:1}
+.show-delete .delete-surface{ pointer-events:auto; opacity:1 }
 
-/* visual feedback */
-.countdown{margin-top:6px;color:var(--accent);font-weight:700}
+/* countdown */
+.countdown{ margin-top:6px; font-weight:800; color:var(--accent-2); }
 
 /* popup */
 .popup{
-  position:fixed;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%) scale(.98);
-  background:#151515;
-  padding:18px;
-  border-radius:14px;
-  width:90%;
-  max-width:420px;
-  box-shadow:0 20px 40px rgba(0,0,0,0.6);
-  transition:transform .14s ease, opacity .14s ease;
+  position:fixed; left:50%; top:50%; transform:translate(-50%,-50%) scale(.98); z-index:1200;
+  background:#0b0b0b; padding:16px; border-radius:16px; width:92%; max-width:420px;
+  box-shadow:0 30px 80px rgba(0,0,0,0.6);
 }
-.popup.hidden{display:none}
-.popup input{width:100%;padding:10px;border-radius:10px;border:none;margin-bottom:10px;background:#0f0f0f;color:#fff}
-.popup-actions{display:flex;gap:8px;justify-content:flex-end}
+.popup.hidden{ display:none }
+.popup input{ width:100%; padding:12px; border-radius:10px; border:none; background:#090909; color:#fff; margin-bottom:8px }
+.popup-actions{ display:flex; justify-content:flex-end; gap:8px }
 
-/* animations */
-.fade-in{animation:fadeIn .18s ease both}
-@keyframes fadeIn{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:none}}
+/* history chart */
+canvas{ max-width:100%; height:auto }
 
-/* responsive tweaks */
+/* small screens */
 @media (max-width:420px){
-  .serie-row input[type="number"]{width:65px}
-  .delete-surface{width:68px}
+  .serie-row input[type="number"]{ width:66px }
+  .delete-surface{ width:76px }
 }
