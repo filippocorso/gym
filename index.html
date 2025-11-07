@@ -4,35 +4,40 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
   <title>Gym App</title>
+
+  <!-- stylesheet -->
   <link rel="stylesheet" href="app.css">
+
+  <!-- manifest -->
   <link rel="manifest" href="manifest.json">
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
 <header>
-  <h1>Gym App</h1>
+  <h1>GYM • PRO</h1>
   <div class="header-controls">
     <button id="toggleMode" class="btn">Modalità Allenamento</button>
-    <button id="viewHistory" class="btn">Storico</button>
+    <button id="viewHistory" class="btn alt">Storico</button>
   </div>
 </header>
 
-<main id="main"></main>
+<main id="main" role="main"></main>
 
-<!-- Popup per inserire nome -->
+<!-- popup semplice -->
 <div id="popup" class="popup hidden" role="dialog" aria-modal="true">
-  <input type="text" id="popupInput" placeholder="Nome">
+  <input id="popupInput" type="text" placeholder="Nome">
   <div class="popup-actions">
     <button id="popupSave" class="btn">Salva</button>
     <button id="popupCancel" class="btn alt">Annulla</button>
   </div>
 </div>
 
-<!-- Chart.js CDN -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('sw.js').then(()=>console.log("SW registrato"));
+    navigator.serviceWorker.register('sw.js').then(()=>console.log("SW registrato")).catch(()=>{});
   }
 </script>
 <script src="app.js"></script>
