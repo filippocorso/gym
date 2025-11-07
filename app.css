@@ -55,22 +55,20 @@ header {
 .serie {
   background: #222;
   border-radius: 12px;
-  padding: 10px;
-  margin: 5px 0;
+  padding: 12px;
+  margin: 8px 0;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
 }
 
-.serie.completed { background: #0a4; }
-.serie.pending { background: #a00; }
-
 .serie input[type="number"] {
-  width: 60px;
-  margin: 0 5px;
+  width: 100%;
+  max-width: 120px;
+  padding: 8px;
   border-radius: 8px;
   border: none;
-  padding: 5px;
   font-size: 16px;
 }
 
