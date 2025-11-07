@@ -1,26 +1,32 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gym App</title>
-<link rel="stylesheet" href="app.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gym App</title>
+  <link rel="stylesheet" href="app.css">
+
+  <!-- Manifest -->
+  <link rel="manifest" href="manifest.json">
 </head>
 <body>
-<header>
-  <h1>Gym App</h1>
-  <button id="storicoBtn" class="btn">Storico Allenamenti</button>
-</header>
 
-<main id="main"></main>
+  <header>
+    <h1>Gym App</h1>
+    <button id="toggleMode" class="btn">Modalità Allenamento</button>
+  </header>
 
-<!-- Popup generico -->
-<div id="popup" class="popup hidden">
-  <input type="text" id="popupInput" placeholder="Nome">
-  <button id="popupSave" class="btn">Salva</button>
-  <button id="popupCancel" class="btn">Annulla</button>
-</div>
+  <main id="main">
+    <!-- Qui verranno renderizzate schede, allenamenti ed esercizi -->
+  </main>
 
-<script src="app.js"></script>
+  <!-- Popup per aggiungere/rinominare scheda, allenamento o esercizio -->
+  <div id="popup" class="popup hidden">
+    <input type="text" id="popupInput" placeholder="Nome">
+    <button id="popupSave" class="btn">Salva</button>
+    <button id="popupCancel" class="btn">Annulla</button>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>
