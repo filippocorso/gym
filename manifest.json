@@ -1,9 +1,9 @@
 {
   "name": "Gym App",
-  "short_name": "Gym",
-  "start_url": ".",
+  "short_name": "GymApp",
+  "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0d0d0d",
+  "background_color": "#111",
   "theme_color": "#0a84ff",
   "icons": [
     {
