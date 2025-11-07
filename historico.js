@@ -1,35 +1,56 @@
-function salvaAllenamentoStorico(si,ai){
-  const a = schede[si].allenamenti[ai];
-  const data = new Date().toLocaleString();
-  let volumeTotale=0;
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Storico Allenamenti</title>
+<link rel="stylesheet" href="app.css">
+<script src="app.js"></script>
+</head>
+<body>
+<header>
+  <h1>Storico Allenamenti</h1>
+  <button class="btn" onclick="window.location.href='index.html'">⬅ Torna Home</button>
+</header>
+<main id="main"></main>
 
-  a.esercizi.forEach(e=>e.serie.forEach(s=>{ volumeTotale+=s.peso*s.reps }));
+<script>
+function renderStorico(){
+  const main = document.getElementById("main");
+  main.innerHTML="";
+  if(storico.length===0){ main.innerHTML="<p>Nessun allenamento salvato</p>"; return; }
 
-  storico.push({
-    scheda:schede[si].nome,
-    allenamento:a.nome,
-    data,
-    durata:Math.floor((Date.now()-a._cronometroStart)/1000),
-    volumeTotale,
-    esercizi:JSON.parse(JSON.stringify(a.esercizi))
+  const list=document.createElement("ul");
+  list.className="list";
+  storico.forEach((a,i)=>{
+    const li=document.createElement("li");
+    li.innerHTML=`<span style="flex:1;text-align:left;cursor:pointer">${a.data} - ${a.scheda} - ${a.allenamento} - Volume: ${a.volumeTotale}</span>`;
+    li.querySelector("span").onclick=()=>mostraDettaglioStorico(i);
+    list.appendChild(li);
   });
-
-  salvaStorico();
-  alert("Allenamento salvato!");
+  main.appendChild(list);
 }
 
-function mostraStorico(){
-  main.innerHTML="<h2>Storico Allenamenti</h2><canvas id='grafico'></canvas>";
-  const ctx=document.getElementById("grafico").getContext("2d");
-  const labels=storico.map(e=>e.data);
-  const data=storico.map(e=>e.volumeTotale);
-
-  new Chart(ctx,{
-    type:'line',
-    data:{
-      labels:labels,
-      datasets:[{label:'Volume Totale',data:data,borderColor:'#0a84ff',fill:false}]
-    },
-    options:{responsive:true}
+function mostraDettaglioStorico(i){
+  const a = storico[i];
+  const main = document.getElementById("main");
+  main.innerHTML=`<h2>${a.scheda} - ${a.allenamento}</h2>
+    <p>Data: ${a.data} | Durata: ${a.durata}s | Volume Totale: ${a.volumeTotale}</p>
+    <button class="btn" onclick="renderStorico()">⬅ Torna</button>`;
+  a.esercizi.forEach(e=>{
+    const div=document.createElement("div");
+    div.className="nomeEsercizio"; div.textContent=e.nome;
+    main.appendChild(div);
+    e.serie.forEach((s,si)=>{
+      const serieDiv=document.createElement("div");
+      serieDiv.className="serie";
+      serieDiv.textContent=`Serie ${si+1}: ${s.peso}kg x ${s.reps} reps | Completata: ${s.completata?"✔️":"❌"}`;
+      main.appendChild(serieDiv);
+    });
   });
 }
+
+renderStorico();
+</script>
+</body>
+</html>
