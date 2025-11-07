@@ -36,28 +36,32 @@ li {
   background: #222;
   border-radius: 10px;
   padding: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
 }
 
 .nomeEsercizio {
   font-weight: bold;
-  margin-bottom: 5px;
   font-size: 16px;
   text-align: left;
+  margin-bottom: 5px;
 }
 
 .serie {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  align-items: flex-start;
   margin-bottom: 5px;
+  flex-direction: column;
 }
 
 .serie.completed {
   text-decoration: line-through;
   opacity: 0.7;
+}
+
+.serie > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
 }
 
 .popup {
@@ -83,7 +87,7 @@ input[type="text"], input[type="number"] {
 }
 
 .countdown {
-  margin-left: 10px;
+  margin-top: 4px;
   font-weight: bold;
   color: #0a84ff;
 }
