@@ -4,7 +4,6 @@ body {
   padding: 0;
   background: #111;
   color: #fff;
-  text-align: center;
 }
 
 header {
@@ -18,8 +17,8 @@ header {
 .btn {
   background: #0a84ff;
   border: none;
-  padding: 12px;
-  margin: 10px;
+  padding: 10px 14px;
+  margin: 4px;
   border-radius: 12px;
   font-size: 16px;
   color: #fff;
@@ -29,39 +28,41 @@ header {
 ul.list {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 li {
-  margin: 8px 0;
   background: #222;
   border-radius: 10px;
+  margin: 8px 0;
   padding: 10px;
 }
 
 .nomeEsercizio {
   font-weight: bold;
   font-size: 16px;
+  margin-bottom: 4px;
   text-align: left;
-  margin-bottom: 5px;
 }
 
 .serie {
   display: flex;
-  align-items: flex-start;
-  margin-bottom: 5px;
   flex-direction: column;
-}
-
-.serie.completed {
-  text-decoration: line-through;
-  opacity: 0.7;
+  gap: 4px;
+  margin-bottom: 6px;
 }
 
 .serie > div {
   display: flex;
+  gap: 12px;
   align-items: center;
-  gap: 8px;
-  margin-top: 2px;
+}
+
+input[type="text"], input[type="number"] {
+  padding: 6px;
+  border-radius: 8px;
+  border: none;
+  width: 80px;
 }
 
 .popup {
@@ -79,15 +80,12 @@ li {
   display: none;
 }
 
-input[type="text"], input[type="number"] {
-  padding: 6px;
-  border-radius: 8px;
-  border: none;
-  width: 80px;
-}
-
 .countdown {
-  margin-top: 4px;
   font-weight: bold;
   color: #0a84ff;
+}
+
+canvas {
+  max-width: 100%;
+  height: auto;
 }
