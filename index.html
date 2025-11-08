@@ -3,15 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
-  <title>Gym App</title>
+  <title>GYM • PRO</title>
 
-  <!-- stylesheet -->
   <link rel="stylesheet" href="app.css">
-
-  <!-- manifest -->
   <link rel="manifest" href="manifest.json">
 
-  <!-- Chart.js CDN -->
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -26,7 +23,7 @@
 
 <main id="main" role="main"></main>
 
-<!-- popup semplice -->
+<!-- popup per nomi -->
 <div id="popup" class="popup hidden" role="dialog" aria-modal="true">
   <input id="popupInput" type="text" placeholder="Nome">
   <div class="popup-actions">
@@ -35,9 +32,12 @@
   </div>
 </div>
 
+<!-- Hidden file input per eventuale CSV BPM (non usato se non vuoi) -->
+<input id="bpmFileInput" type="file" accept=".csv" style="display:none" />
+
 <script>
   if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('sw.js').then(()=>console.log("SW registrato")).catch(()=>{});
+    navigator.serviceWorker.register('sw.js').then(()=>console.log('SW registrato')).catch(()=>{});
   }
 </script>
 <script src="app.js"></script>
