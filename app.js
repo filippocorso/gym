@@ -17,7 +17,7 @@ const toggleModeBtn = document.getElementById("toggleMode");
 const viewHistoryBtn = document.getElementById("viewHistory");
 const bpmFileInput = document.getElementById("bpmFileInput");
 
-// ------------------------------ UTIL ------------------------------
+// ------------------------------ UTILS ------------------------------
 function salvaSchede(){ localStorage.setItem("schede", JSON.stringify(schede)); }
 function salvaStorico(){ localStorage.setItem("storico", JSON.stringify(storico)); }
 function vibrate(ms){ if(navigator.vibrate) navigator.vibrate(ms); }
@@ -97,7 +97,6 @@ function mostraAllenamenti(si){
   ensureStructure();
   main.innerHTML = `<h2>${s.nome}</h2><ul id="allenamentiList" class="list"></ul>`;
 
-  // back button in modalità allenamento (torna alla lista schede)
   if(modalità==="allenamento"){
     const backBtn = document.createElement('button'); backBtn.className='btn'; backBtn.textContent='⬅ Torna';
     backBtn.onclick = ()=> renderSchede();
@@ -127,7 +126,7 @@ function mostraEsercizi(si,ai){
   const a = schede[si].allenamenti[ai];
   ensureStructure();
 
-  // Ensure all 'completata' flags are false when entering in modalità allenamento (fresh start)
+  // Reset completata flags when entering workout mode for a fresh start (keeps user expectation)
   if(modalità === "allenamento"){
     a.esercizi.forEach(ex => { ex.serie.forEach(s => { s.completata = false; }); });
     salvaSchede();
@@ -159,37 +158,81 @@ function mostraEsercizi(si,ai){
     const li = document.createElement('li'); li.className='card swipe-wrap';
     const swipeContent = document.createElement('div'); swipeContent.className='swipe-content';
 
+    // nome esercizio
     const nameDiv = document.createElement('div'); nameDiv.className='nomeEsercizio';
-    nameDiv.innerHTML = `<input type="text" value="${e.nome}" onchange="modificaEsercizioNome(${si},${ai},${ei},this.value)">`;
+    const nameInput = document.createElement('input');
+    nameInput.type = 'text';
+    nameInput.value = e.nome;
+    nameInput.addEventListener('change', () => modificaEsercizioNome(si, ai, ei, nameInput.value));
+    nameDiv.appendChild(nameInput);
     swipeContent.appendChild(nameDiv);
 
+    // recupero
     const recDiv = document.createElement('div'); recDiv.className='recuperoEsercizio';
-    recDiv.innerHTML = `Recupero: <input type="number" value="${e.recupero||30}" onchange="modificaRecupero(${si},${ai},${ei},this.value)"> s`;
+    recDiv.innerHTML = 'Recupero: ';
+    const recInput = document.createElement('input');
+    recInput.type = 'number';
+    recInput.value = e.recupero || 30;
+    recInput.style.width = '86px';
+    recInput.addEventListener('change', () => modificaRecupero(si, ai, ei, recInput.value));
+    recDiv.appendChild(recInput);
+    recDiv.appendChild(document.createTextNode(' s'));
     swipeContent.appendChild(recDiv);
 
+    // series — per ogni serie creiamo nodi DOM e listener (evita innerHTML per checkbox)
     e.serie.forEach((s, si2)=>{
       const divS = document.createElement('div'); divS.className='serie';
       const row = document.createElement('div'); row.className='serie-row';
-      const chkHtml = (modalità==="allenamento") ? `<input class="chk" type="checkbox" ${s.completata?"checked":""} onclick="toggleSerie(${si},${ai},${ei},${si2},this)">` : '';
-      row.innerHTML = `${chkHtml}
-        <input type="number" value="${s.peso||0}" onchange="modificaSerie(${si},${ai},${ei},${si2},'peso',this.value)">kg
-        <input type="number" value="${s.reps||0}" onchange="modificaSerie(${si},${ai},${ei},${si2},'reps',this.value)">reps`;
+
+      // checkbox (solo in modalità allenamento)
+      if(modalità === "allenamento"){
+        const chk = document.createElement('input');
+        chk.type = 'checkbox';
+        chk.className = 'chk';
+        chk.checked = !!s.completata;
+        // IMPORTANT: use change event to catch it reliably on touch devices
+        chk.addEventListener('change', (ev)=>{
+          // call the same function as before
+          toggleSerie(si, ai, ei, si2, chk);
+        });
+        row.appendChild(chk);
+      }
+
+      // peso input
+      const pesoInput = document.createElement('input');
+      pesoInput.type = 'number';
+      pesoInput.value = s.peso || 0;
+      pesoInput.style.width = '78px';
+      pesoInput.addEventListener('change', ()=> modificaSerie(si, ai, ei, si2, 'peso', pesoInput.value));
+      row.appendChild(pesoInput);
+      row.appendChild(document.createTextNode('kg'));
+
+      // reps input
+      const repsInput = document.createElement('input');
+      repsInput.type = 'number';
+      repsInput.value = s.reps || 0;
+      repsInput.style.width = '78px';
+      repsInput.addEventListener('change', ()=> modificaSerie(si, ai, ei, si2, 'reps', repsInput.value));
+      row.appendChild(repsInput);
+      row.appendChild(document.createTextNode(' reps'));
+
       divS.appendChild(row);
       swipeContent.appendChild(divS);
     });
 
+    // action buttons
     const actions = document.createElement('div'); actions.className='controls-row';
     const btnAdd = document.createElement('button'); btnAdd.className='btn'; btnAdd.textContent='+ Aggiungi Serie';
-    btnAdd.onclick = ()=>{ e.serie.push({ peso:0, reps:0, completata:false }); salvaSchede(); mostraEsercizi(si,ai); };
+    btnAdd.addEventListener('click', ()=>{ e.serie.push({ peso:0, reps:0, completata:false }); salvaSchede(); mostraEsercizi(si,ai); });
     const btnRem = document.createElement('button'); btnRem.className='btn alt'; btnRem.textContent='🗑 Elimina Serie';
-    btnRem.onclick = ()=>{ if(e.serie.length>0){ e.serie.splice(e.serie.length-1,1); salvaSchede(); mostraEsercizi(si,ai); } };
+    btnRem.addEventListener('click', ()=>{ if(e.serie.length>0){ e.serie.splice(e.serie.length-1,1); salvaSchede(); mostraEsercizi(si,ai); } });
     actions.appendChild(btnAdd); actions.appendChild(btnRem);
     swipeContent.appendChild(actions);
 
-    // delete surface for this exercise (revealed by left-swipe)
+    // delete-surface (left swipe reveal)
     const del = document.createElement('div'); del.className='delete-surface';
     const delBtn = document.createElement('button'); delBtn.className='btn alt'; delBtn.textContent='Elimina';
-    delBtn.onclick = (function(siLocal, aiLocal, eiLocal){
+    delBtn.addEventListener('click', (function(siLocal, aiLocal, eiLocal){
       return function(){
         if(confirm("Eliminare questo esercizio?")){
           schede[siLocal].allenamenti[aiLocal].esercizi.splice(eiLocal,1);
@@ -197,14 +240,14 @@ function mostraEsercizi(si,ai){
           mostraEsercizi(siLocal, aiLocal);
         }
       };
-    })(si, ai, ei);
+    })(si, ai, ei));
     del.appendChild(delBtn);
 
     li.appendChild(swipeContent);
     li.appendChild(del);
     list.appendChild(li);
 
-    // SWIPE LEFT only
+    // SWIPE LEFT only (touch handlers)
     let startX=0, curX=0, dragging=false;
     swipeContent.addEventListener('touchstart',(ev)=>{ startX = ev.touches[0].clientX; dragging=true; swipeContent.style.transition='none'; }, {passive:true});
     swipeContent.addEventListener('touchmove',(ev)=>{ if(!dragging) return; curX = ev.touches[0].clientX; const dx = curX - startX;
@@ -218,15 +261,13 @@ function mostraEsercizi(si,ai){
     });
   });
 
-  // SAVE (workout): save snapshot, reset completata flags in saved scheda, then go to Storico and open detail
+  // SAVE (workout): build snapshot, reset completata flags in scheda, then goto Storico and open detail
   if(modalità==="allenamento" && a.esercizi.length > 0){
     const salvaBtn = document.createElement('button'); salvaBtn.className='btn'; salvaBtn.textContent='💾 Salva Allenamento';
-    salvaBtn.onclick = ()=>{
+    salvaBtn.addEventListener('click', ()=>{
       clearInterval(cronometroInterval); cronometroInterval = null;
-      // build storico entry
       let volume = 0;
       let totalSeries = 0;
-      // Build esercizi snapshot but maintain execution order: exercises appear in array order and series in stored order
       const eserciziSnapshot = a.esercizi.map(ex => {
         const serieSnap = ex.serie.map(s => {
           volume += (s.peso||0) * (s.reps||0);
@@ -249,20 +290,20 @@ function mostraEsercizi(si,ai){
       storico.push(entry);
       salvaStorico();
 
-      // RESET completata flags in the actual scheda so next time checkboxes are empty
+      // Reset completata in the saved scheda
       schede[si].allenamenti[ai].esercizi.forEach(ex=>{
         ex.serie.forEach(ser=>{ ser.completata = false; });
       });
       salvaSchede();
 
       playBeep();
-      setTimeout(()=>{ /* small delay for UX */ }, 120);
+      setTimeout(()=>{}, 120);
 
-      // go to Storico and auto-open last saved detail
+      // go to Storico and open last detail
       mostraStorico();
       const lastIndex = storico.length - 1;
       setTimeout(()=>{ mostraDettaglioStorico(lastIndex); }, 220);
-    };
+    });
     main.appendChild(salvaBtn);
   }
 }
@@ -274,15 +315,26 @@ function modificaSerie(si, ai, ei, si2, param, val){ schede[si].allenamenti[ai].
 function modificaRecupero(si, ai, ei, val){ schede[si].allenamenti[ai].esercizi[ei].recupero = Number(val); salvaSchede(); }
 
 // ------------------------------ Toggle serie (complete) + timer recupero ------------------------------
-function toggleSerie(si, ai, ei, si2, checkbox){
-  let s = schede[si].allenamenti[ai].esercizi[ei].serie[si2];
-  s.completata = checkbox.checked;
+function toggleSerie(si, ai, ei, si2, checkboxOrElement){
+  // checkboxOrElement can be the checkbox element itself or the event
+  // normalize
+  let isChecked = false;
+  if(typeof checkboxOrElement === 'object' && checkboxOrElement.checked !== undefined){
+    isChecked = checkboxOrElement.checked;
+  } else {
+    isChecked = !!checkboxOrElement;
+  }
+
+  let sRef = schede[si].allenamenti[ai].esercizi[ei].serie[si2];
+  sRef.completata = isChecked;
   salvaSchede();
-  // re-render (keeps UI consistent)
+  // We re-render to keep UI consistent
   mostraEsercizi(si, ai);
 
-  if(s.completata){
+  if(isChecked){
+    // find recovery seconds for this exercise
     let seconds = schede[si].allenamenti[ai].esercizi[ei].recupero || 30;
+    // append a small countdown to the corresponding card (best-effort)
     const cards = document.querySelectorAll('#eserciziList .card');
     let appended = false;
     for(const card of cards){
@@ -292,7 +344,11 @@ function toggleSerie(si, ai, ei, si2, checkbox){
         card.appendChild(cd);
         const interval = setInterval(()=>{
           seconds--; cd.textContent = seconds + 's';
-          if(seconds < 0){ clearInterval(interval); cd.remove(); playBeep(); }
+          if(seconds < 0){
+            clearInterval(interval);
+            try{ cd.remove(); }catch(e){}
+            playBeep();
+          }
         },1000);
         activeTimers.push(interval);
         appended = true;
@@ -301,7 +357,7 @@ function toggleSerie(si, ai, ei, si2, checkbox){
   }
 }
 
-// ------------------------------ Salva Allenamento (creazione) ------------------------------
+// ------------------------------ Salva Allenamento creazione ------------------------------
 function salvaAllenamento(si, ai){ salvaSchede(); mostraAllenamenti(si); }
 
 // ------------------------------ toggle modalità ------------------------------
@@ -324,7 +380,6 @@ function mostraStorico(){
   const ctx = document.getElementById('grafico').getContext('2d');
   const labels = storico.map(s=>new Date(s.data).toLocaleString());
   const data = storico.map(s=>s.volume);
-  // destroy previous if exists
   if(window._storicoChart) try{ window._storicoChart.destroy(); }catch(e){}
   window._storicoChart = new Chart(ctx,{ type:'bar', data:{ labels, datasets:[{ label:'Volume (kg*reps)', data, backgroundColor:'rgba(176,0,32,0.9)' }] }, options:{ responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } } } });
 
@@ -343,19 +398,9 @@ function mostraStorico(){
   });
 }
 
-// dettaglio storico: mostra subito il dettaglio completo (B)
+// dettaglio storico: mostra subito il dettaglio completo (B) + grafico del volume totale (single bar)
 function mostraDettaglioStorico(idx){
   const e = storico[idx]; if(!e) return;
-
-  // Build a chart of per-series volume for this single session (bars)
-  const perSeries = []; // volumes per series in execution order
-  const perSeriesLabels = []; // labels like "Panca #1"
-  e.esercizi.forEach(ex=>{
-    ex.serie.forEach((s, i)=>{
-      perSeries.push((s.peso||0) * (s.reps||0));
-      perSeriesLabels.push(`${ex.nome} #${i+1}`);
-    });
-  });
 
   main.innerHTML = `<h2>${e.nomeAllenamento}</h2>
     <div class="detail-meta">Data: ${new Date(e.data).toLocaleString()}</div>
@@ -365,18 +410,17 @@ function mostraDettaglioStorico(idx){
     <ul class="list" id="detList"></ul>
     <div class="controls-row"><button class="btn" onclick="mostraStorico()">⬅ Torna</button></div>`;
 
-  // draw per-series bar chart (bars = volume per serie)
+  // draw single-bar chart with total volume for this session
   const ctx = document.getElementById('sessionChart').getContext('2d');
   if(window._sessionChart) try{ window._sessionChart.destroy(); }catch(e){}
   window._sessionChart = new Chart(ctx, {
     type: 'bar',
-    data: { labels: perSeriesLabels, datasets: [{ label: 'Volume per serie (kg*reps)', data: perSeries, backgroundColor: 'rgba(176,0,32,0.9)' }] },
-    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } }, scales:{ x:{ ticks:{ autoSkip:true, maxTicksLimit:8 } } } }
+    data: { labels: [new Date(e.data).toLocaleString()], datasets: [{ label: 'Volume totale (kg*reps)', data: [e.volume], backgroundColor: 'rgba(176,0,32,0.95)' }] },
+    options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } } }
   });
 
   // render esercizi and every single series in order (B: show each single serie)
   const det = document.getElementById('detList');
-  // We want the order in which series were recorded; saved snapshot already preserves that order: exercises array order and series internal order.
   e.esercizi.forEach(ex=>{
     const li = document.createElement('li'); li.className='card';
     li.innerHTML = `<div style="font-weight:700;text-align:left">${ex.nome}</div><div style="color:#bbb">Recupero: ${ex.recupero}s</div>`;
