@@ -348,19 +348,23 @@ function modificaRecupero(si, ai, ei, val){ schede[si].allenamenti[ai].esercizi[
 // app.js
 
 // ------------------------------ Toggle serie (complete) + timer recupero ------------------------------
+// app.js
+
+// ------------------------------ Toggle serie (complete) + timer recupero ------------------------------
 function toggleSerie(si, ai, ei, si2, checkbox){
   // 1. Pulizia: Stoppa e pulisci tutti i timer attivi e i relativi elementi DOM
   activeTimers.forEach(i=>clearInterval(i)); 
   activeTimers = [];
-  document.querySelectorAll('.countdown').forEach(cd => cd.remove()); // Rimuove visualmente
+  document.querySelectorAll('.countdown').forEach(cd => cd.remove()); 
 
   // 2. Aggiornamento del modello di dati (Stato)
+  // normalize checked
   const isChecked = (typeof checkbox === 'object' && checkbox.checked !== undefined) ? checkbox.checked : !!checkbox;
   let sRef = schede[si].allenamenti[ai].esercizi[ei].serie[si2];
   sRef.completata = isChecked;
   salvaSchede();
   
-  // 3. Re-render: Ricrea la lista degli esercizi per sincronizzare il DOM (compresi i checkbox)
+  // 3. Re-render: Ricrea la lista degli esercizi per sincronizzare il DOM, mostrando il check spuntato
   mostraEsercizi(si, ai); 
 
   // 4. Avvio del Timer se la serie è completata
@@ -372,7 +376,6 @@ function toggleSerie(si, ai, ei, si2, checkbox){
     // Trova la card dell'esercizio corretto (nel DOM appena re-renderizzato)
     for(const card of cards){
       const inputName = card.querySelector('.nomeEsercizio input');
-      // Trova l'esercizio in base al nome (usa lo stesso metodo che avevi)
       if(inputName && inputName.value === schede[si].allenamenti[ai].esercizi[ei].nome && !appended){
         
         // Crea e aggiunge l'elemento countdown
@@ -386,6 +389,7 @@ function toggleSerie(si, ai, ei, si2, checkbox){
             clearInterval(interval); 
             try{ cd.remove(); }catch(e){} 
             playBeep(); 
+            // Rimuovi l'intervallo dall'array activeTimers
             activeTimers = activeTimers.filter(i => i !== interval);
           }
         },1000);
@@ -396,6 +400,7 @@ function toggleSerie(si, ai, ei, si2, checkbox){
     }
   }
 }
+
 
 // ------------------------------ Salva Allenamento creazione ------------------------------
 function salvaAllenamento(si, ai){ salvaSchede(); mostraAllenamenti(si); }
