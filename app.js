@@ -345,12 +345,6 @@ function modificaSerie(si, ai, ei, si2, param, val){ schede[si].allenamenti[ai].
 function modificaRecupero(si, ai, ei, val){ schede[si].allenamenti[ai].esercizi[ei].recupero = Number(val); salvaSchede(); }
 
 // ------------------------------ Toggle serie (complete) + timer recupero ------------------------------
-// app.js
-
-// ------------------------------ Toggle serie (complete) + timer recupero ------------------------------
-// app.js
-
-// ------------------------------ Toggle serie (complete) + timer recupero ------------------------------
 function toggleSerie(si, ai, ei, si2, checkbox){
   // 1. Pulizia: Stoppa e pulisci tutti i timer attivi e i relativi elementi DOM
   activeTimers.forEach(i=>clearInterval(i)); 
