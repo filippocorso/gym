@@ -345,6 +345,9 @@ function modificaSerie(si, ai, ei, si2, param, val){ schede[si].allenamenti[ai].
 function modificaRecupero(si, ai, ei, val){ schede[si].allenamenti[ai].esercizi[ei].recupero = Number(val); salvaSchede(); }
 
 // ------------------------------ Toggle serie (complete) + timer recupero ------------------------------
+// app.js
+
+// ------------------------------ Toggle serie (complete) + timer recupero ------------------------------
 function toggleSerie(si, ai, ei, si2, checkbox){
   // 1. Pulizia: Stoppa e pulisci tutti i timer attivi e i relativi elementi DOM
   activeTimers.forEach(i=>clearInterval(i)); 
@@ -352,7 +355,6 @@ function toggleSerie(si, ai, ei, si2, checkbox){
   document.querySelectorAll('.countdown').forEach(cd => cd.remove()); // Rimuove visualmente
 
   // 2. Aggiornamento del modello di dati (Stato)
-  // normalize checked
   const isChecked = (typeof checkbox === 'object' && checkbox.checked !== undefined) ? checkbox.checked : !!checkbox;
   let sRef = schede[si].allenamenti[ai].esercizi[ei].serie[si2];
   sRef.completata = isChecked;
@@ -384,13 +386,12 @@ function toggleSerie(si, ai, ei, si2, checkbox){
             clearInterval(interval); 
             try{ cd.remove(); }catch(e){} 
             playBeep(); 
-            // Rimuovi l'intervallo dall'array activeTimers
             activeTimers = activeTimers.filter(i => i !== interval);
           }
         },1000);
         
         activeTimers.push(interval);
-        appended = true; // Assicurati di aggiungere il timer una sola volta per esercizio
+        appended = true;
       }
     }
   }
