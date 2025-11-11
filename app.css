@@ -78,15 +78,16 @@ li.card{
   box-shadow: 0 6px 18px rgba(176,0,32,0.14);
   transform: scale(1.06);
 }
+
 .chk:checked::after{
   content: '✓';
   display:inline-block;
   color: var(--accent);
   font-weight:800;
-  font-size:14px;
+  font-size:18px; /* Aumentato per maggiore visibilità */
   position:relative;
-  left:5px;
-  top:2px;
+  left:3px;      /* Spostato per centratura orizzontale */
+  top:-2px;     /* Spostato per centratura verticale */
 }
 
 /* inputs for peso and reps */
