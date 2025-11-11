@@ -1,23 +1,74 @@
-/* ---- CHECK STILE APPLE FITNESS ---- */
-.series-check {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    border: 2px solid #8A0303;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 10px;
-    cursor: pointer;
-    transition: 0.2s ease-in-out;
+body {
+  font-family: Arial, sans-serif;
+  background: #0d0d0d;
+  color: #fff;
+  margin: 0;
+  text-align: center;
 }
 
-.series-check.checked {
-    background-color: #8A0303;
+header {
+  background: #1a1a1a;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.series-check.checked::after {
-    content: "✔";
-    font-size: 14px;
-    color: white;
+.btn {
+  background: #b30000;
+  border: none;
+  padding: 12px;
+  margin: 10px;
+  border-radius: 10px;
+  font-size: 16px;
+  color: #fff;
+  cursor: pointer;
+}
+
+ul {
+  padding: 0;
+  list-style: none;
+}
+
+.item, .ex-item {
+  background: #1c1c1c;
+  margin: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  text-align: left;
+}
+
+.exercise-title {
+  font-size: 20px;
+  margin-bottom: 5px;
+}
+
+.serie-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  margin-top: 8px;
+}
+
+.check-circle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #b30000;
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.check-circle.checked {
+  background: #b30000;
+}
+
+input {
+  width: 60px;
+  text-align: center;
+  border-radius: 8px;
+  border: none;
+  padding: 5px;
+  background: #333;
+  color: #fff;
 }
