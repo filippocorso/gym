@@ -1,52 +1,44 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gym App</title>
-<link rel="stylesheet" href="app.css">
-<link rel="manifest" href="manifest.json">
-</head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
+  <title>GYM • PRO</title>
 
+  <link rel="stylesheet" href="app.css">
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
 <body>
 
 <header>
-<button id="backBtn" class="btn hidden">← Torna</button>
-<h1>GYM APP</h1>
+  <h1>GYM • PRO</h1>
+  <div class="header-controls">
+    <button id="toggleMode" class="btn">Modalità Allenamento</button>
+    <button id="viewHistory" class="btn alt">Storico</button>
+  </div>
 </header>
 
-<main id="homePage">
-<ul id="schedeList"></ul>
-<button id="addSchedaBtn" class="btn">+ Aggiungi Scheda</button>
-<button id="goAllenamento" class="btn">Modalità Allenamento</button>
-<button id="goStorico" class="btn">Storico</button>
-</main>
+<main id="main" role="main"></main>
 
-<main id="schedaPage" class="hidden">
-<h2 id="schedaTitle"></h2>
-<ul id="workoutList"></ul>
-<button id="addWorkoutBtn" class="btn">+ Aggiungi Allenamento</button>
-</main>
-
-<main id="allenamentoPage" class="hidden">
-<h2 id="allenamentoTitle"></h2>
-<button id="startAllenamentoBtn" class="btn">Avvia Allenamento</button>
-<ul id="exerciseList"></ul>
-<button id="saveAllenamentoBtn" class="btn">Salva Allenamento</button>
-</main>
-
-<main id="storicoPage" class="hidden">
-<h2>Storico</h2>
-<ul id="storicoList"></ul>
-</main>
-
-<!-- Popup input testo -->
-<div id="popup" class="popup hidden">
-<input type="text" id="popupInput" placeholder="">
-<button id="popupSave" class="btn">Salva</button>
-<button id="popupCancel" class="btn">Annulla</button>
+<!-- popup per nomi -->
+<div id="popup" class="popup hidden" role="dialog" aria-modal="true">
+  <input id="popupInput" type="text" placeholder="Nome">
+  <div class="popup-actions">
+    <button id="popupSave" class="btn">Salva</button>
+    <button id="popupCancel" class="btn alt">Annulla</button>
+  </div>
 </div>
 
+<input id="bpmFileInput" type="file" accept=".csv" style="display:none" />
+
+<script>
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('sw.js').then(()=>console.log('SW registrato')).catch(()=>{});
+  }
+</script>
 <script src="app.js"></script>
 </body>
 </html>
