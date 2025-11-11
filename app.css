@@ -57,38 +57,30 @@ li.card{
 .serie{ display:flex; flex-direction:column; gap:6px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.02) }
 .serie-row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap }
 
-/* custom checkbox (D: scelgo io: bianco con bordo rosso quando checked to be visible) */
+/* NUOVO STILE CHECKBOX: PUNTINO VUOTO */
 .chk{
-  -webkit-appearance: none;
-  appearance: none;
-  width:26px;
-  height:26px;
-  border-radius:6px;
-  border:2px solid rgba(255,255,255,0.15);
-  background:transparent;
-  display:inline-block;
-  vertical-align:middle;
-  transition: transform .12s ease, background .12s ease, border-color .12s ease;
-  margin-right:6px;
-}
-.chk:active{ transform:scale(.95) }
-.chk:checked{
-  background: linear-gradient(135deg, #fff, #fff);
-  border-color: var(--accent);
-  box-shadow: 0 6px 18px rgba(176,0,32,0.14);
-  transform: scale(1.06);
+  /* Trasformato in puntino vuoto */
+  width:26px; height:26px; 
+  border:2px solid var(--accent); /* Bordo con il colore principale */
+  border-radius:50%; /* Rende il checkbox un cerchio */
+  background:transparent; 
+  appearance:none; outline:none; cursor:pointer;
+  transition:background-color .16s ease, border-color .16s ease; /* Transizione per l'effetto di riempimento */
 }
 
-.chk:checked::after{
-  content: '✓';
-  display:inline-block;
-  color: var(--accent);
-  font-weight:800;
-  font-size:18px; /* Aumentato per maggiore visibilità */
-  position:relative;
-  left:3px;      /* Spostato per centratura orizzontale */
-  top:-2px;     /* Spostato per centratura verticale */
+/* NUOVO STILE CHECKBOX: PUNTINO RIEMPITO */
+.chk:checked{
+  /* Quando è spuntato, si riempie */
+  border-color:var(--accent); 
+  background:var(--accent); 
 }
+
+/* RIMUOVIAMO L'ELEMENTO AFTER (il '✓' o altro) */
+.chk:checked::after{
+  content: none; 
+}
+
+/* ... (tutto il CSS successivo) ... */
 
 /* inputs for peso and reps */
 .serie-row input[type="number"]{ width:78px; padding:8px; border-radius:10px; border:none; background:#0b0b0b; color:#fff; text-align:center; font-weight:700 }
