@@ -346,29 +346,51 @@ function modificaRecupero(si, ai, ei, val){ schede[si].allenamenti[ai].esercizi[
 
 // ------------------------------ Toggle serie (complete) + timer recupero ------------------------------
 function toggleSerie(si, ai, ei, si2, checkbox){
+  // 1. Pulizia: Stoppa e pulisci tutti i timer attivi e i relativi elementi DOM
+  activeTimers.forEach(i=>clearInterval(i)); 
+  activeTimers = [];
+  document.querySelectorAll('.countdown').forEach(cd => cd.remove()); // Rimuove visualmente
+
+  // 2. Aggiornamento del modello di dati (Stato)
   // normalize checked
   const isChecked = (typeof checkbox === 'object' && checkbox.checked !== undefined) ? checkbox.checked : !!checkbox;
   let sRef = schede[si].allenamenti[ai].esercizi[ei].serie[si2];
   sRef.completata = isChecked;
   salvaSchede();
-  // rerender to keep consistent
-  mostraEsercizi(si, ai);
+  
+  // 3. Re-render: Ricrea la lista degli esercizi per sincronizzare il DOM (compresi i checkbox)
+  mostraEsercizi(si, ai); 
 
+  // 4. Avvio del Timer se la serie è completata
   if(isChecked){
     let seconds = schede[si].allenamenti[ai].esercizi[ei].recupero || 30;
     const cards = document.querySelectorAll('#eserciziList .card');
     let appended = false;
+
+    // Trova la card dell'esercizio corretto (nel DOM appena re-renderizzato)
     for(const card of cards){
       const inputName = card.querySelector('.nomeEsercizio input');
+      // Trova l'esercizio in base al nome (usa lo stesso metodo che avevi)
       if(inputName && inputName.value === schede[si].allenamenti[ai].esercizi[ei].nome && !appended){
+        
+        // Crea e aggiunge l'elemento countdown
         const cd = document.createElement('div'); cd.className='countdown'; cd.textContent = seconds + 's';
         card.appendChild(cd);
+        
+        // Avvia il nuovo intervallo
         const interval = setInterval(()=>{
           seconds--; cd.textContent = seconds + 's';
-          if(seconds < 0){ clearInterval(interval); try{ cd.remove(); }catch(e){} playBeep(); }
+          if(seconds < 0){ 
+            clearInterval(interval); 
+            try{ cd.remove(); }catch(e){} 
+            playBeep(); 
+            // Rimuovi l'intervallo dall'array activeTimers
+            activeTimers = activeTimers.filter(i => i !== interval);
+          }
         },1000);
+        
         activeTimers.push(interval);
-        appended = true;
+        appended = true; // Assicurati di aggiungere il timer una sola volta per esercizio
       }
     }
   }
