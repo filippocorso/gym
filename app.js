@@ -358,7 +358,7 @@ function toggleSerie(si, ai, ei, si2, checkbox){
   sRef.completata = isChecked;
   salvaSchede();
   
-  // 3. Re-render: Ricrea la lista degli esercizi per sincronizzare il DOM, mostrando il check spuntato
+  // 3. Re-render: Ricrea la lista degli esercizi per sincronizzare il DOM, mostrando il puntino riempito/vuoto
   mostraEsercizi(si, ai); 
 
   // 4. Avvio del Timer se la serie è completata
