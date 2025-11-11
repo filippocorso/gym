@@ -37,7 +37,12 @@ function ensureStructure(){
 }
 ensureStructure();
 
-// ------------------------------ RENDER: SCHEDE ------------------------------
+// ------------------------------ RENDER HOME / SCHEDE ------------------------------
+function renderHome(){
+  // Home shows the schede list (entry point)
+  renderSchede();
+}
+
 function renderSchede(){
   main.innerHTML = `<ul id="schedeList" class="list"></ul>
     ${modalità==="creazione"?'<button id="addSchedaBtn" class="btn">+ Aggiungi Scheda</button>':''}`;
@@ -97,11 +102,19 @@ function mostraAllenamenti(si){
   ensureStructure();
   main.innerHTML = `<h2>${s.nome}</h2><ul id="allenamentiList" class="list"></ul>`;
 
-  if(modalità==="allenamento"){
+  // *** IMPORTANT: add Torna also in Modalità Creazione in top-left (user requested)
+  if(modalità==="allenamento" || modalità==="creazione"){
     const backBtn = document.createElement('button'); backBtn.className='btn'; backBtn.textContent='⬅ Torna';
-    backBtn.onclick = ()=> renderSchede();
+    backBtn.style.marginBottom = '8px';
+    backBtn.onclick = ()=> {
+      // go back to home controls (the main screen with mode toggles)
+      renderHome();
+    };
+    // put it at the top of the main
     main.insertBefore(backBtn, main.firstChild);
-  } else {
+  }
+
+  if(modalità !== "allenamento"){
     main.innerHTML += `<div class="controls-row"><button class="btn" onclick="aggiungiAllenamento(${si})">+ Aggiungi Allenamento</button></div>`;
   }
 
@@ -126,7 +139,7 @@ function mostraEsercizi(si,ai){
   const a = schede[si].allenamenti[ai];
   ensureStructure();
 
-  // Reset completata flags when entering workout mode for a fresh start (keeps user expectation)
+  // Reset completata flags when entering workout mode for a fresh start
   if(modalità === "allenamento"){
     a.esercizi.forEach(ex => { ex.serie.forEach(s => { s.completata = false; }); });
     salvaSchede();
@@ -158,6 +171,9 @@ function mostraEsercizi(si,ai){
     const li = document.createElement('li'); li.className='card swipe-wrap';
     const swipeContent = document.createElement('div'); swipeContent.className='swipe-content';
 
+    // If the touch starts on an input/button, skip swipe handling (prevents accidental swipe while editing)
+    // We'll attach touch handlers below that check event.target to avoid interfering with input editing.
+
     // nome esercizio
     const nameDiv = document.createElement('div'); nameDiv.className='nomeEsercizio';
     const nameInput = document.createElement('input');
@@ -179,20 +195,19 @@ function mostraEsercizi(si,ai){
     recDiv.appendChild(document.createTextNode(' s'));
     swipeContent.appendChild(recDiv);
 
-    // series — per ogni serie creiamo nodi DOM e listener (evita innerHTML per checkbox)
+    // series — per ogni serie create DOM nodes and stable listeners (no innerHTML)
     e.serie.forEach((s, si2)=>{
       const divS = document.createElement('div'); divS.className='serie';
       const row = document.createElement('div'); row.className='serie-row';
 
-      // checkbox (solo in modalità allenamento)
+      // checkbox (only in workout mode)
       if(modalità === "allenamento"){
         const chk = document.createElement('input');
         chk.type = 'checkbox';
         chk.className = 'chk';
         chk.checked = !!s.completata;
-        // IMPORTANT: use change event to catch it reliably on touch devices
         chk.addEventListener('change', (ev)=>{
-          // call the same function as before
+          // when user toggles checkbox, start timer + update state
           toggleSerie(si, ai, ei, si2, chk);
         });
         row.appendChild(chk);
@@ -207,7 +222,7 @@ function mostraEsercizi(si,ai){
       row.appendChild(pesoInput);
       row.appendChild(document.createTextNode('kg'));
 
-      // reps input
+      // reps input (editable inline)
       const repsInput = document.createElement('input');
       repsInput.type = 'number';
       repsInput.value = s.reps || 0;
@@ -220,7 +235,7 @@ function mostraEsercizi(si,ai){
       swipeContent.appendChild(divS);
     });
 
-    // action buttons
+    // action buttons (series add/remove). Remove series only via these buttons.
     const actions = document.createElement('div'); actions.className='controls-row';
     const btnAdd = document.createElement('button'); btnAdd.className='btn'; btnAdd.textContent='+ Aggiungi Serie';
     btnAdd.addEventListener('click', ()=>{ e.serie.push({ peso:0, reps:0, completata:false }); salvaSchede(); mostraEsercizi(si,ai); });
@@ -229,7 +244,7 @@ function mostraEsercizi(si,ai){
     actions.appendChild(btnAdd); actions.appendChild(btnRem);
     swipeContent.appendChild(actions);
 
-    // delete-surface (left swipe reveal)
+    // delete-surface for exercise (revealed by left-swipe)
     const del = document.createElement('div'); del.className='delete-surface';
     const delBtn = document.createElement('button'); delBtn.className='btn alt'; delBtn.textContent='Elimina';
     delBtn.addEventListener('click', (function(siLocal, aiLocal, eiLocal){
@@ -247,13 +262,29 @@ function mostraEsercizi(si,ai){
     li.appendChild(del);
     list.appendChild(li);
 
-    // SWIPE LEFT only (touch handlers)
+    // SWIPE LEFT only: but ignore if the touch start is on an input/button
     let startX=0, curX=0, dragging=false;
-    swipeContent.addEventListener('touchstart',(ev)=>{ startX = ev.touches[0].clientX; dragging=true; swipeContent.style.transition='none'; }, {passive:true});
-    swipeContent.addEventListener('touchmove',(ev)=>{ if(!dragging) return; curX = ev.touches[0].clientX; const dx = curX - startX;
-      if(dx < 0 && Math.abs(dx) < 160){ swipeContent.style.transform = `translateX(${dx}px)`; if(Math.abs(dx) > 60) li.classList.add('show-delete'); else li.classList.remove('show-delete'); }
+    swipeContent.addEventListener('touchstart',(ev)=>{
+      // if user starts touch on an interactive control, don't engage swipe
+      const t = ev.target;
+      if(t && (t.tagName === 'INPUT' || t.tagName === 'BUTTON' || t.closest('.controls-row'))){
+        dragging = false;
+        return;
+      }
+      startX = ev.touches[0].clientX; dragging=true; swipeContent.style.transition='none';
     }, {passive:true});
+
+    swipeContent.addEventListener('touchmove',(ev)=>{
+      if(!dragging) return;
+      curX = ev.touches[0].clientX; const dx = curX - startX;
+      if(dx < 0 && Math.abs(dx) < 160){
+        swipeContent.style.transform = `translateX(${dx}px)`;
+        if(Math.abs(dx) > 60) li.classList.add('show-delete'); else li.classList.remove('show-delete');
+      }
+    }, {passive:true});
+
     swipeContent.addEventListener('touchend',()=>{
+      if(!dragging){ swipeContent.style.transform = 'translateX(0px)'; li.classList.remove('show-delete'); return; }
       dragging=false; swipeContent.style.transition='transform .16s cubic-bezier(.22,.9,.34,1)';
       const dx = curX - startX;
       if(dx < -120){ swipeContent.style.transform = 'translateX(-84px)'; li.classList.add('show-delete'); } else { swipeContent.style.transform = 'translateX(0px)'; li.classList.remove('show-delete'); }
@@ -261,7 +292,7 @@ function mostraEsercizi(si,ai){
     });
   });
 
-  // SAVE (workout): build snapshot, reset completata flags in scheda, then goto Storico and open detail
+  // SAVE (workout): snapshot + reset completata flags in scheda + go to Storico & open detail
   if(modalità==="allenamento" && a.esercizi.length > 0){
     const salvaBtn = document.createElement('button'); salvaBtn.className='btn'; salvaBtn.textContent='💾 Salva Allenamento';
     salvaBtn.addEventListener('click', ()=>{
@@ -290,16 +321,15 @@ function mostraEsercizi(si,ai){
       storico.push(entry);
       salvaStorico();
 
-      // Reset completata in the saved scheda
+      // Reset completata flags in the saved scheda
       schede[si].allenamenti[ai].esercizi.forEach(ex=>{
         ex.serie.forEach(ser=>{ ser.completata = false; });
       });
       salvaSchede();
 
       playBeep();
-      setTimeout(()=>{}, 120);
 
-      // go to Storico and open last detail
+      // go to Storico and open last saved detail
       mostraStorico();
       const lastIndex = storico.length - 1;
       setTimeout(()=>{ mostraDettaglioStorico(lastIndex); }, 220);
@@ -308,33 +338,24 @@ function mostraEsercizi(si,ai){
   }
 }
 
-// ------------------------------ Aggiungi/Modifica Esercizi ------------------------------
+// ------------------------------ Aggiungi / Modifica Esercizi ------------------------------
 function aggiungiEsercizio(si, ai){ editing={ tipo:"esercizio", scheda:si, allenamento:ai, index:null }; popupInput.value=""; popup.classList.remove('hidden'); }
 function modificaEsercizioNome(si, ai, ei, val){ schede[si].allenamenti[ai].esercizi[ei].nome = val; salvaSchede(); }
 function modificaSerie(si, ai, ei, si2, param, val){ schede[si].allenamenti[ai].esercizi[ei].serie[si2][param] = Number(val); salvaSchede(); }
 function modificaRecupero(si, ai, ei, val){ schede[si].allenamenti[ai].esercizi[ei].recupero = Number(val); salvaSchede(); }
 
 // ------------------------------ Toggle serie (complete) + timer recupero ------------------------------
-function toggleSerie(si, ai, ei, si2, checkboxOrElement){
-  // checkboxOrElement can be the checkbox element itself or the event
-  // normalize
-  let isChecked = false;
-  if(typeof checkboxOrElement === 'object' && checkboxOrElement.checked !== undefined){
-    isChecked = checkboxOrElement.checked;
-  } else {
-    isChecked = !!checkboxOrElement;
-  }
-
+function toggleSerie(si, ai, ei, si2, checkbox){
+  // normalize checked
+  const isChecked = (typeof checkbox === 'object' && checkbox.checked !== undefined) ? checkbox.checked : !!checkbox;
   let sRef = schede[si].allenamenti[ai].esercizi[ei].serie[si2];
   sRef.completata = isChecked;
   salvaSchede();
-  // We re-render to keep UI consistent
+  // rerender to keep consistent
   mostraEsercizi(si, ai);
 
   if(isChecked){
-    // find recovery seconds for this exercise
     let seconds = schede[si].allenamenti[ai].esercizi[ei].recupero || 30;
-    // append a small countdown to the corresponding card (best-effort)
     const cards = document.querySelectorAll('#eserciziList .card');
     let appended = false;
     for(const card of cards){
@@ -344,11 +365,7 @@ function toggleSerie(si, ai, ei, si2, checkboxOrElement){
         card.appendChild(cd);
         const interval = setInterval(()=>{
           seconds--; cd.textContent = seconds + 's';
-          if(seconds < 0){
-            clearInterval(interval);
-            try{ cd.remove(); }catch(e){}
-            playBeep();
-          }
+          if(seconds < 0){ clearInterval(interval); try{ cd.remove(); }catch(e){} playBeep(); }
         },1000);
         activeTimers.push(interval);
         appended = true;
@@ -366,7 +383,7 @@ toggleModeBtn.onclick = ()=>{
   activeTimers.forEach(i=>clearInterval(i)); activeTimers = [];
   modalità = (modalità === "creazione") ? "allenamento" : "creazione";
   toggleModeBtn.textContent = (modalità==="creazione") ? "Modalità Allenamento" : "Modalità Creazione";
-  renderSchede();
+  renderHome();
 };
 
 // ------------------------------ STORICO & GRAFICO ------------------------------
@@ -375,7 +392,7 @@ function mostraStorico(){
   main.innerHTML = `<h2>Storico Allenamenti</h2>
     <div style="height:260px" class="chart-container"><canvas id="grafico"></canvas></div>
     <ul id="storicoList" class="list"></ul>
-    <div class="controls-row"><button class="btn" onclick="renderSchede()">⬅ Torna</button></div>`;
+    <div class="controls-row"><button class="btn" onclick="renderHome()">⬅ Torna</button></div>`;
 
   const ctx = document.getElementById('grafico').getContext('2d');
   const labels = storico.map(s=>new Date(s.data).toLocaleString());
@@ -398,7 +415,7 @@ function mostraStorico(){
   });
 }
 
-// dettaglio storico: mostra subito il dettaglio completo (B) + grafico del volume totale (single bar)
+// dettaglio storico: single bar = total volume + details
 function mostraDettaglioStorico(idx){
   const e = storico[idx]; if(!e) return;
 
@@ -419,7 +436,7 @@ function mostraDettaglioStorico(idx){
     options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ display:false } } }
   });
 
-  // render esercizi and every single series in order (B: show each single serie)
+  // render esercizi and every single series in order
   const det = document.getElementById('detList');
   e.esercizi.forEach(ex=>{
     const li = document.createElement('li'); li.className='card';
@@ -437,4 +454,4 @@ function updateCronometro(){ const c = document.getElementById('cronometro'); if
 function formatTime(sec){ const m = Math.floor(sec/60); const s = sec%60; return `${m}m ${s}s`; }
 
 // ------------------------------ INIT ------------------------------
-renderSchede();
+renderHome();
