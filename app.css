@@ -1,84 +1,44 @@
-body {
-  font-family: 'Arial', sans-serif;
-  background-color: #0d0d0d;
-  color: #fff;
-  text-align: center;
-  margin: 0;
-  padding: 0;
-}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
+  <title>GYM • PRO</title>
 
-.page {
-  display: none;
-  padding: 20px;
-}
+  <link rel="stylesheet" href="app.css">
+  <link rel="manifest" href="manifest.json">
 
-.page.active {
-  display: block;
-}
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
 
-button {
-  background-color: #800000;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  margin: 10px;
-  border-radius: 8px;
-  font-size: 16px;
-  cursor: pointer;
-}
+<header>
+  <h1>GYM • PRO</h1>
+  <div class="header-controls">
+    <button id="toggleMode" class="btn">Modalità Allenamento</button>
+    <button id="viewHistory" class="btn alt">Storico</button>
+  </div>
+</header>
 
-button.back {
-  position: absolute;
-  left: 10px;
-  top: 10px;
-  background-color: #333;
-}
+<main id="main" role="main"></main>
 
-button.save {
-  background-color: #b30000;
-}
+<!-- popup per nomi -->
+<div id="popup" class="popup hidden" role="dialog" aria-modal="true">
+  <input id="popupInput" type="text" placeholder="Nome">
+  <div class="popup-actions">
+    <button id="popupSave" class="btn">Salva</button>
+    <button id="popupCancel" class="btn alt">Annulla</button>
+  </div>
+</div>
 
-input, select {
-  padding: 8px;
-  margin: 5px;
-  border-radius: 6px;
-  border: none;
-  font-size: 14px;
-}
+<input id="bpmFileInput" type="file" accept=".csv" style="display:none" />
 
-.esercizio {
-  background-color: #1a1a1a;
-  border-radius: 10px;
-  padding: 10px;
-  margin: 10px auto;
-  max-width: 400px;
-}
-
-.serie {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 5px;
-}
-
-.checkbox {
-  width: 24px;
-  height: 24px;
-  border: 2px solid #b30000;
-  border-radius: 4px;
-  position: relative;
-  cursor: pointer;
-}
-
-.checkbox.checked {
-  background-color: #b30000;
-}
-
-.checkbox.checked::after {
-  content: '✔';
-  position: absolute;
-  top: -3px;
-  left: 5px;
-  color: white;
-  font-size: 18px;
-}
+<script>
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('sw.js').then(()=>console.log('SW registrato')).catch(()=>{});
+  }
+</script>
+<script src="app.js"></script>
+</body>
+</html>
