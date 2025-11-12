@@ -206,11 +206,62 @@ function mostraEsercizi(si,ai){
         chk.type = 'checkbox';
         chk.className = 'chk';
         chk.checked = !!s.completata;
+
+        // --- VISUAL CHECK: create a visible span that shows the tick clearly on dark background ---
+        const visual = document.createElement('span');
+        // inline styles to guarantee visibility regardless of external CSS
+        visual.style.display = 'inline-block';
+        visual.style.width = '26px';
+        visual.style.height = '26px';
+        visual.style.borderRadius = '6px';
+        visual.style.border = '2px solid rgba(255,255,255,0.15)';
+        visual.style.marginRight = '8px';
+        visual.style.verticalAlign = 'middle';
+        visual.style.lineHeight = '22px';
+        visual.style.textAlign = 'center';
+        visual.style.fontWeight = '800';
+        visual.style.cursor = 'pointer';
+        // initial state
+        if(chk.checked){
+          visual.style.background = '#ffffff';
+          visual.style.color = '#b00020';
+          visual.textContent = '✓';
+        } else {
+          visual.style.background = 'transparent';
+          visual.style.color = 'transparent';
+          visual.textContent = '';
+        }
+
+        // clicking the visual toggles the native checkbox and triggers change
+        visual.addEventListener('click', ()=>{
+          chk.checked = !chk.checked;
+          chk.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+
+        // when native checkbox changes, update the visual accordingly
         chk.addEventListener('change', (ev)=>{
-          // when user toggles checkbox, start timer + update state
+          const checked = !!chk.checked;
+          if(checked){
+            visual.style.background = '#ffffff';
+            visual.style.color = '#b00020';
+            visual.textContent = '✓';
+          } else {
+            visual.style.background = 'transparent';
+            visual.style.color = 'transparent';
+            visual.textContent = '';
+          }
+          // existing behavior: start timer + update state via toggleSerie
           toggleSerie(si, ai, ei, si2, chk);
         });
+
+        // append visual first (so it is visible) and keep hidden native checkbox for accessibility
+        // hide native checkbox visually but keep it in DOM (we keep default size but set opacity 0)
+        chk.style.opacity = '0';
+        chk.style.width = '26px';
+        chk.style.height = '26px';
+        chk.style.marginRight = '4px';
         row.appendChild(chk);
+        row.appendChild(visual);
       }
 
       // peso input
@@ -339,7 +390,7 @@ function mostraEsercizi(si,ai){
 }
 
 // ------------------------------ Aggiungi / Modifica Esercizi ------------------------------
-function aggiungiEsercizio(si, ai){ editing={ tipo:"esercizio", scheda:si, allenamento:ai, index:null }; popupInput.value=""; popup.classList.remove('hidden'); }
+function aggiungiEsercizio(si, ai){ editing={ tipo:"esercizio", scheda:si, allenamento:ai, index:null }; popupInput.value = ""; popup.classList.remove('hidden'); }
 function modificaEsercizioNome(si, ai, ei, val){ schede[si].allenamenti[ai].esercizi[ei].nome = val; salvaSchede(); }
 function modificaSerie(si, ai, ei, si2, param, val){ schede[si].allenamenti[ai].esercizi[ei].serie[si2][param] = Number(val); salvaSchede(); }
 function modificaRecupero(si, ai, ei, val){ schede[si].allenamenti[ai].esercizi[ei].recupero = Number(val); salvaSchede(); }
@@ -455,4 +506,3 @@ function formatTime(sec){ const m = Math.floor(sec/60); const s = sec%60; return
 
 // ------------------------------ INIT ------------------------------
 renderHome();
-
