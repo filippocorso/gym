@@ -506,3 +506,59 @@ function formatTime(sec){ const m = Math.floor(sec/60); const s = sec%60; return
 
 // ------------------------------ INIT ------------------------------
 renderHome();
+
+// ✅ FIX VISUAL CHECK E RESET ALLA FINE ALLENAMENTO
+document.addEventListener('click', (e) => {
+  if (e.target.classList.contains('exercise-check')) {
+    e.preventDefault();
+    const check = e.target;
+    // toggle visivo
+    check.classList.toggle('checked');
+
+    // suono beep (se già presente)
+    try {
+      const beep = new Audio('https://actions.google.com/sounds/v1/alarms/beep_short.ogg');
+      beep.play();
+    } catch {}
+  }
+});
+
+// ✅ Stile visivo del check (spunta rossa o bianca)
+const style = document.createElement('style');
+style.textContent = `
+.exercise-check {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  border: 2px solid #ff4c4c;
+  display: inline-block;
+  cursor: pointer;
+  vertical-align: middle;
+  transition: all 0.2s ease;
+  background-color: transparent;
+}
+.exercise-check.checked {
+  background-color: #ff4c4c;
+  box-shadow: 0 0 6px #ff4c4c;
+  position: relative;
+}
+.exercise-check.checked::after {
+  content: '✓';
+  position: absolute;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -58%);
+}
+`;
+document.head.appendChild(style);
+
+// ✅ Reset automatico dei check alla fine allenamento
+const salvaBtn = document.getElementById('salvaAllenamentoBtn');
+if (salvaBtn) {
+  salvaBtn.addEventListener('click', () => {
+    document.querySelectorAll('.exercise-check.checked').forEach(c => c.classList.remove('checked'));
+  });
+}
