@@ -1,45 +1,48 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover" />
-  <title>GYM • PRO</title>
-
-  <link rel="stylesheet" href="app.css">
-  <link rel="manifest" href="manifest.json">
-
-  <!-- Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GymTracker</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <div id="app">
+    <div id="mainMenu" class="page active">
+      <h1>GymTracker</h1>
+      <button onclick="openSchede()">Allenamenti</button>
+      <button onclick="openStorico()">Storico</button>
+    </div>
 
-<header>
-  <h1>GYM • PRO</h1>
-  <div class="header-controls">
-    <button id="toggleMode" class="btn">Modalità Allenamento</button>
-    <button id="viewHistory" class="btn alt">Storico</button>
+    <div id="schedePage" class="page">
+      <button class="back" onclick="goBack('schedePage')">← Torna</button>
+      <h2>Le tue Schede</h2>
+      <div id="listaSchede"></div>
+      <button onclick="openCreazione()">Crea nuova scheda</button>
+    </div>
+
+    <div id="creazionePage" class="page">
+      <button class="back" onclick="goBack('creazionePage')">← Torna</button>
+      <h2>Crea Scheda</h2>
+      <input type="text" id="nomeScheda" placeholder="Nome scheda">
+      <div id="eserciziContainer"></div>
+      <button onclick="aggiungiEsercizio()">+ Aggiungi esercizio</button>
+      <button class="save" onclick="salvaScheda()">Salva scheda</button>
+    </div>
+
+    <div id="allenamentoPage" class="page">
+      <button class="back" onclick="goBack('allenamentoPage')">← Torna</button>
+      <h2 id="titoloAllenamento"></h2>
+      <div id="listaEserciziAllenamento"></div>
+      <button class="save" onclick="salvaAllenamento()">Salva allenamento</button>
+    </div>
+
+    <div id="storicoPage" class="page">
+      <button class="back" onclick="goBack('storicoPage')">← Torna</button>
+      <h2>Storico Allenamenti</h2>
+      <div id="storicoContainer"></div>
+    </div>
   </div>
-</header>
-
-<main id="main" role="main"></main>
-
-<!-- popup per nomi -->
-<div id="popup" class="popup hidden" role="dialog" aria-modal="true">
-  <input id="popupInput" type="text" placeholder="Nome">
-  <div class="popup-actions">
-    <button id="popupSave" class="btn">Salva</button>
-    <button id="popupCancel" class="btn alt">Annulla</button>
-  </div>
-</div>
-
-<input id="bpmFileInput" type="file" accept=".csv" style="display:none" />
-
-<script>
-  if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('sw.js').then(()=>console.log('SW registrato')).catch(()=>{});
-  }
-</script>
-<script src="app.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
-
