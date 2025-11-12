@@ -57,7 +57,7 @@ li.card{
 .serie{ display:flex; flex-direction:column; gap:6px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.02) }
 .serie-row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap }
 
-/* custom checkbox (D: scelgo io: bianco con bordo rosso quando checked to be visible) */
+/* custom checkbox */
 .chk{
   -webkit-appearance: none;
   appearance: none;
@@ -79,7 +79,7 @@ li.card{
   transform: scale(1.06);
 }
 .chk:checked::after{
-  content: 'â';
+  content: '✓';
   display:inline-block;
   color: var(--accent);
   font-weight:800;
@@ -136,4 +136,3 @@ li.card{
   .serie-row input[type="number"]{ width:66px }
   .delete-surface{ width:76px }
 }
-
