@@ -1,132 +1,84 @@
-:root{
-  --bg:#070607;
-  --card:#0f0f10;
-  --muted:#9a9a9a;
-  --accent:#b00020;
-  --accent-2:#ff304f;
-  --btn-shadow: 0 8px 28px rgba(176,0,32,0.12);
-  --radius:14px;
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #0d0d0d;
+  color: #fff;
+  text-align: center;
+  margin: 0;
+  padding: 0;
 }
 
-/* base */
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0;padding:0;
-  background:var(--bg);
-  color:#fff;
-  font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-  -webkit-font-smoothing:antialiased;
-  -webkit-user-select:none;
+.page {
+  display: none;
+  padding: 20px;
 }
 
-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:14px;
-  background:linear-gradient(180deg,#0b0b0b,#0d0d0d);
-  border-bottom:1px solid rgba(255,255,255,0.03);
-}
-header h1{margin:0;font-size:17px;font-weight:700;letter-spacing:1px}
-.header-controls{display:flex;gap:8px}
-
-/* main */
-main{padding:14px;padding-bottom:100px;transition:opacity .18s ease, transform .12s ease}
-
-/* buttons */
-.btn{
-  background: linear-gradient(135deg,var(--accent), var(--accent-2));
-  border:none;color:#fff;padding:10px 12px;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;box-shadow:var(--btn-shadow)
-}
-.btn.alt{ background:#2a2a2a; box-shadow:none; color:#fff; border:1px solid rgba(255,255,255,0.03) }
-
-ul.list{list-style:none;padding:0;margin:0}
-
-/* card */
-li.card{
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
-  border-radius: var(--radius);
-  padding:12px;margin:10px 0;position:relative;overflow:visible;border:1px solid rgba(255,255,255,0.03)
+.page.active {
+  display: block;
 }
 
-.nomeEsercizio input{ width:100%; font-weight:700; font-size:15px; border:none; background:transparent; color:#fff }
-.recuperoEsercizio{ color:var(--muted); margin-top:6px; font-size:13px }
-
-/* serie vertical */
-.serie{ display:flex; flex-direction:column; gap:6px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.02) }
-.serie-row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap }
-
-/* NUOVO STILE CHECKBOX: PUNTINO VUOTO */
-.chk{
-  /* Trasformato in puntino vuoto */
-  width:26px; height:26px; 
-  border:2px solid var(--accent); /* Bordo con il colore principale */
-  border-radius:50%; /* Rende il checkbox un cerchio */
-  background:transparent; 
-  appearance:none; outline:none; cursor:pointer;
-  transition:background-color .16s ease, border-color .16s ease; /* Transizione per l'effetto di riempimento */
+button {
+  background-color: #800000;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 10px;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
 }
 
-/* NUOVO STILE CHECKBOX: PUNTINO RIEMPITO */
-.chk:checked{
-  /* Quando è spuntato, si riempie */
-  border-color:var(--accent); 
-  background:var(--accent); 
+button.back {
+  position: absolute;
+  left: 10px;
+  top: 10px;
+  background-color: #333;
 }
 
-/* RIMUOVIAMO L'ELEMENTO AFTER (il '✓' o altro) */
-.chk:checked::after{
-  content: none; 
+button.save {
+  background-color: #b30000;
 }
 
-/* ... (tutto il CSS successivo) ... */
-
-/* inputs for peso and reps */
-.serie-row input[type="number"]{ width:78px; padding:8px; border-radius:10px; border:none; background:#0b0b0b; color:#fff; text-align:center; font-weight:700 }
-.serie-row input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-
-/* controls */
-.controls-row{ display:flex; gap:8px; margin-top:8px; flex-wrap:wrap }
-
-/* swipe */
-.swipe-wrap{ position:relative; overflow:hidden; border-radius:12px }
-.swipe-content{ transform:translateX(0); transition:transform .16s cubic-bezier(.22,.9,.34,1); padding:8px; }
-.delete-surface{
-  position:absolute; right:10px; top:10px; bottom:10px; width:92px;
-  display:flex; align-items:center; justify-content:center;
-  background:linear-gradient(180deg,#330003,#4b0006);
-  border-radius:10px; pointer-events:none; opacity:0; transition:opacity .12s ease;
-}
-.show-delete .delete-surface{ pointer-events:auto; opacity:1 }
-
-.countdown{ margin-top:6px; font-weight:800; color:var(--accent-2) }
-
-/* popup */
-.popup{
-  position:fixed; left:50%; top:50%; transform:translate(-50%,-50%) scale(.98); z-index:1200;
-  background:#0b0b0b; padding:16px; border-radius:16px; width:92%; max-width:420px; box-shadow:0 30px 80px rgba(0,0,0,0.6)
-}
-.popup.hidden{ display:none }
-.popup input{ width:100%; padding:12px; border-radius:10px; border:none; background:#090909; color:#fff; margin-bottom:8px }
-.popup-actions{ display:flex; justify-content:flex-end; gap:8px }
-
-/* History detail: chart container */
-.chart-container{
-  margin-top:12px;
-  background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
-  border-radius:12px;padding:8px;
-  border:1px solid rgba(255,255,255,0.03);
-  height:260px;
-}
-.detail-meta{ color:var(--muted); margin-top:8px; font-size:14px }
-
-/* expanded details */
-.expanded-details{ margin-top:10px; border-top:1px dashed rgba(255,255,255,0.03); padding-top:10px }
-
-/* responsive */
-@media (max-width:420px){
-  .serie-row input[type="number"]{ width:66px }
-  .delete-surface{ width:76px }
+input, select {
+  padding: 8px;
+  margin: 5px;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
 }
 
+.esercizio {
+  background-color: #1a1a1a;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 10px auto;
+  max-width: 400px;
+}
+
+.serie {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 5px;
+}
+
+.checkbox {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #b30000;
+  border-radius: 4px;
+  position: relative;
+  cursor: pointer;
+}
+
+.checkbox.checked {
+  background-color: #b30000;
+}
+
+.checkbox.checked::after {
+  content: '✔';
+  position: absolute;
+  top: -3px;
+  left: 5px;
+  color: white;
+  font-size: 18px;
+}
